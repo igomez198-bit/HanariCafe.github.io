@@ -1,3 +1,6 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+import { getDatabase, ref, get, set, child } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
+
 const MENU_STORAGE_KEY = 'hanariMenuData';
 
 const firebaseConfig = {
@@ -12,24 +15,14 @@ const firebaseConfig = {
 };
 
 let firebaseDb = null;
-let firebaseHelpers = null;
 let isFirebaseReady = false;
 
 async function initFirebase() {
     if (isFirebaseReady) return;
 
     try {
-        const firebaseApp = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js');
-        const firebaseDatabase = await import('https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js');
-        const app = firebaseApp.initializeApp(firebaseConfig);
-        firebaseDb = firebaseDatabase.getDatabase(app);
-        firebaseHelpers = {
-            ref: firebaseDatabase.ref,
-            set: firebaseDatabase.set,
-            get: firebaseDatabase.get,
-            child: firebaseDatabase.child,
-            onValue: firebaseDatabase.onValue
-        };
+        const app = initializeApp(firebaseConfig);
+        firebaseDb = getDatabase(app);
         isFirebaseReady = true;
     } catch (error) {
         console.warn('Firebase could not initialize; falling back to localStorage.', error);
@@ -125,7 +118,7 @@ async function getStoredMenuItems() {
 
     if (isFirebaseReady) {
         try {
-            const snapshot = await firebaseHelpers.get(firebaseHelpers.child(firebaseHelpers.ref(firebaseDb), 'menuItems'));
+            const snapshot = await get(child(ref(firebaseDb), 'menuItems'));
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 return Array.isArray(data) ? data : Object.values(data);
@@ -150,7 +143,7 @@ async function saveMenuItems(items) {
 
     if (isFirebaseReady) {
         try {
-            await firebaseHelpers.set(firebaseHelpers.ref(firebaseDb, 'menuItems'), items);
+            await set(ref(firebaseDb, 'menuItems'), items);
             showAdminMessage('Menu saved to Firebase.');
             return;
         } catch (error) {
