@@ -1623,6 +1623,7 @@ section {
 }
 
 .admin-lock-card {
+    position: relative;
     width: min(44rem, 100%);
     padding: 2.5rem;
     border-radius: 2rem;
