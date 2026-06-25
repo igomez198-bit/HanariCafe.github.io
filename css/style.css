@@ -675,7 +675,7 @@ section {
 }
 
 .menu .box-container .box {
-    padding: 2.4rem;
+        position: relative;
     border: var(--border);
     border-radius: var(--border-radius);
     display: flex;
@@ -695,14 +695,20 @@ section {
     background: rgba(255, 255, 255, 1);
 }
 
-.menu .box-container .box img {
-    width: 11rem;
-    height: 11rem;
-    object-fit: cover;
-    margin: 0;
-    flex-shrink: 0;
-    border-radius: 1.5rem;
-}
+    .box .item-badges,
+    .menu .box-container .box .item-badges {
+        position: absolute;
+        top: 1.6rem;
+        right: 1.6rem;
+        display: flex;
+        flex-direction: column;
+        gap: .8rem;
+        z-index: 2;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+
 
 .menu .box-container .box .content {
     width: 100%;
@@ -1032,7 +1038,7 @@ section {
 }
 
 /* Review card content inside mem-box */
-.review-card { display: none; }
+.mem-box .review-card { display: none; }
 
 /* Cutesy aesthetic touches */
 .memories {
@@ -1386,6 +1392,7 @@ section {
     }
 
     .menu .box-container .box {
+        position: relative;
         flex-flow: column;
         align-items: flex-start;
         gap: 1.4rem;
@@ -1499,4 +1506,217 @@ section {
     height: 18rem;
     width: 100%;
     object-fit: cover;
+}
+
+/* Admin dashboard styles */
+.admin-page {
+    padding: 7rem 8% 4rem;
+    background: linear-gradient(180deg, rgba(255, 245, 240, .85), #fff);
+    min-height: 100vh;
+}
+
+.admin-page .heading {
+    text-align: center;
+    margin-bottom: .4rem;
+}
+
+.admin-page .heading span {
+    color: var(--main-color);
+}
+
+.admin-page .section-copy {
+    max-width: 78rem;
+    margin: 0 auto 2rem;
+    font-size: 1.75rem;
+    color: #5d4338;
+    text-align: center;
+    line-height: 1.8;
+}
+
+.admin-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem auto 1.5rem;
+    max-width: 78rem;
+}
+
+.admin-controls .btn {
+    min-width: 14rem;
+}
+
+.admin-note {
+    max-width: 78rem;
+    margin: 0 auto 2.4rem;
+    font-size: 1.45rem;
+    color: #6c4c3d;
+    text-align: center;
+    opacity: .85;
+    line-height: 1.7;
+}
+
+.admin-message {
+    max-width: 78rem;
+    margin: 0 auto 2rem;
+    padding: 1.4rem 1.8rem;
+    border-radius: 1.4rem;
+    background: rgba(255, 255, 255, .95);
+    border: var(--border);
+    font-size: 1.6rem;
+    color: #4d3425;
+    display: none;
+}
+
+.admin-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(24rem, 1fr) minmax(24rem, 1fr);
+    gap: 1.8rem;
+    align-items: start;
+}
+
+.admin-section,
+.admin-sidebar-box,
+.admin-review-box {
+    background: #fff;
+    border: var(--border);
+    border-radius: 2rem;
+    padding: 2rem;
+    box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+}
+
+.admin-section h2,
+.admin-sidebar-box h2,
+.admin-review-box h2 {
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    color: var(--main-color);
+}
+
+.admin-items,
+.admin-addons,
+.admin-reviews {
+    display: grid;
+    gap: 1.6rem;
+}
+
+.admin-item,
+.admin-review-card {
+    background: #fff;
+    border: var(--border);
+    border-radius: 1.8rem;
+    padding: 1.75rem;
+    box-shadow: 0 1rem 2rem rgba(108, 63, 47, .08);
+    display: grid;
+    gap: 1.4rem;
+}
+
+.admin-item label,
+.admin-review-card label {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #5d4338;
+    margin-bottom: .6rem;
+}
+
+.admin-item input,
+.admin-item textarea,
+.admin-item select,
+.admin-review-card input,
+.admin-review-card textarea {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: var(--border);
+    border-radius: 1.2rem;
+    font-size: 1.55rem;
+    background: rgba(255,255,255,.97);
+    color: #5d4338;
+}
+
+.admin-item textarea,
+.admin-review-card textarea {
+    min-height: 10rem;
+    resize: vertical;
+}
+
+.admin-item .admin-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.4rem;
+}
+
+.admin-item .admin-image,
+.admin-review-card .review-image {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 12rem 1fr;
+    align-items: center;
+}
+
+.admin-item .admin-image img,
+.admin-review-card .review-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 1.4rem;
+    box-shadow: 0 .8rem 1.6rem rgba(108,63,47,.12);
+}
+
+.admin-item .image-controls {
+    display: grid;
+    gap: 1rem;
+    margin-top: .6rem;
+}
+
+.admin-item .clear-image,
+.admin-review-card .admin-actions .btn {
+    width: fit-content;
+    padding: .8rem 1.2rem;
+}
+
+.admin-item .admin-actions,
+.admin-review-card .admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+.admin-review-card .review-meta {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(12rem, 1fr);
+    gap: 1.4rem;
+}
+
+.admin-toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.6rem;
+}
+
+.admin-toggle-grid label {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: 1.45rem;
+    color: #5d4338;
+}
+
+.admin-toggle-grid input {
+    accent-color: var(--main-color);
+}
+
+@media (max-width: 950px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-item .admin-meta,
+    .admin-review-card .review-meta,
+    .admin-item .admin-image,
+    .admin-review-card .review-image {
+        grid-template-columns: 1fr;
+    }
 }
