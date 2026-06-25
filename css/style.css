@@ -292,13 +292,18 @@ section {
     margin: 0 auto;
 }
 
-    .reservations {
-        background: rgba(255, 255, 255, .92);
-        padding: 4rem 0;
-    }
+.reservations {
+    background: rgba(255, 255, 255, .92);
+    padding: 4rem 0;
+}
 
+.reserve-copy {
+    font-size: 1.8rem;
     color: var(--main-color);
     line-height: 1.9;
+    text-align: center;
+    max-width: 70rem;
+    margin: 0 auto;
 }
 
 .reserve-actions {
