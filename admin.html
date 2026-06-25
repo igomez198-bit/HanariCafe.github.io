@@ -141,17 +141,73 @@
 
         .admin-layout {
             display: grid;
-            grid-template-columns: minmax(0, 2.3fr) minmax(28rem, 1fr);
+            grid-template-columns: minmax(0, 1.8fr) minmax(28rem, 1fr) minmax(28rem, 1fr);
             gap: 2rem;
             align-items: start;
         }
 
-        .admin-sidebar-box {
+        .admin-sidebar-box,
+        .admin-review-box {
             background: rgba(255,255,255,.95);
             border: var(--border);
             border-radius: 2rem;
             padding: 2rem;
             box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+        }
+
+        .admin-review-box {
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        .admin-review-box h2 {
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: var(--main-color);
+        }
+
+        .admin-review-card {
+            background: #fff;
+            border: var(--border);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        .admin-review-card .review-image {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: 10rem 1fr;
+            align-items: center;
+        }
+
+        .admin-review-card .review-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1.4rem;
+            box-shadow: 0 .8rem 1.6rem rgba(108,63,47,.12);
+        }
+
+        .admin-review-card textarea {
+            min-height: 10rem;
+        }
+
+        .admin-review-card .review-meta {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(12rem, 1fr);
+            gap: 1.6rem;
+        }
+
+        .admin-review-card .review-meta label {
+            margin-bottom: .6rem;
+        }
+
+        .admin-reviews {
+            display: grid;
+            gap: 1.6rem;
         }
 
         .admin-sidebar-box h2 {
@@ -182,6 +238,15 @@
             color: #4d3425;
             display: none;
         }
+
+        .admin-note {
+            max-width: 88rem;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: #6c4c3d;
+            text-align: center;
+            opacity: .85;
+        }
     </style>
 </head>
 
@@ -192,7 +257,9 @@
         <div id="menu-btn" class="fas fa-bars"></div>
 
         <a href="index.html" class="logo">
-            <img src="image/logo.svg" alt="Hanari Cafe logo" class="logo-img">
+            <span class="logo-title">hanari</span>
+            <span class="logo-subtitle">Café</span>
+            <span class="logo-tagline">est. 2026</span>
         </a>
 
         <nav class="navbar">
@@ -214,13 +281,14 @@
 
     <section class="admin-page" id="admin">
         <h1 class="heading">admin <span>menu manager</span></h1>
-        <p class="section-copy">Manage menu items and add-ons separately. Changes are saved locally in the browser.</p>
+        <p class="section-copy">Add new favorites, update prices, or remove old items. Keep the live menu fresh and inviting with every edit.</p>
 
         <div class="admin-controls">
             <button type="button" class="btn btn-alt" id="add-item">Add menu item</button>
             <button type="button" class="btn btn-alt" id="add-addon">Add add-on</button>
-            <button type="button" class="btn" id="save-menu">Save changes</button>
+            <button type="button" class="btn" id="save-menu">Update menu</button>
         </div>
+        <p class="admin-note">Hit “Update menu” to publish your latest changes to the live menu page.</p>
 
         <div id="admin-message" class="admin-message"></div>
 
@@ -233,6 +301,12 @@
             <div class="admin-sidebar-box">
                 <h2>Add-ons</h2>
                 <div id="admin-addons" class="admin-addons"></div>
+            </div>
+
+            <div class="admin-review-box">
+                <h2>Reviews</h2>
+                <button type="button" class="btn btn-alt" id="add-review">Add review</button>
+                <div id="admin-reviews" class="admin-reviews"></div>
             </div>
         </div>
     </section>

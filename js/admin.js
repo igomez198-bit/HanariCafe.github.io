@@ -144,6 +144,66 @@ async function getStoredMenuItems() {
     }
 }
 
+async function getStoredReviews() {
+    await initFirebase();
+    if (isFirebaseReady) {
+        try {
+            const snapshot = await get(child(ref(firebaseDb), 'reviews'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                return Array.isArray(data) ? data : Object.values(data);
+            }
+        } catch (error) {
+            console.warn('Firebase review read failed, using localStorage fallback.', error);
+        }
+    }
+
+    const stored = localStorage.getItem('hanariReviews');
+    if (!stored) {
+        return [
+            {
+                id: 'althea-review',
+                image: 'image/pic-1.png',
+                name: 'Althea',
+                comment: '“The coffee and atmosphere are both amazing. My favorite spot for evening catchups.”'
+            },
+            {
+                id: 'marco-review',
+                image: 'image/pic-2.png',
+                name: 'Marco',
+                comment: '“Fresh drinks, friendly service, and a beautiful space. Highly recommend the floral latte.”'
+            },
+            {
+                id: 'ysabelle-review',
+                image: 'image/pic-3.png',
+                name: 'Ysabelle',
+                comment: '“Cozy, relaxing, and the perfect place to unwind after work. The staff made our visit special.”'
+            }
+        ];
+    }
+
+    try {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+async function saveReviews(reviews) {
+    localStorage.setItem('hanariReviews', JSON.stringify(reviews));
+
+    if (isFirebaseReady) {
+        try {
+            await set(ref(firebaseDb, 'reviews'), reviews);
+            console.log('Firebase review save completed');
+            return;
+        } catch (error) {
+            console.warn('Firebase review save failed, saved locally only.', error);
+        }
+    }
+}
+
 async function saveMenuItems(items) {
     localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(items));
 
@@ -152,14 +212,14 @@ async function saveMenuItems(items) {
             console.log('Saving menu items to Firebase:', items);
             await set(ref(firebaseDb, 'menuItems'), items);
             console.log('Firebase save completed');
-            showAdminMessage('Menu saved to Firebase.');
+            showAdminMessage('Menu updated successfully.');
             return;
         } catch (error) {
             console.warn('Firebase save failed, saved locally only.', error);
         }
     }
 
-    showAdminMessage('Menu saved locally. Refresh the menu page to see updates.');
+    showAdminMessage('Changes saved locally. Refresh the menu page to review them.');
 }
 
 function showAdminMessage(text) {
@@ -238,13 +298,16 @@ function createAddonListItem(item) {
 async function renderAdminItems() {
     const menuContainer = document.getElementById('admin-items');
     const addonContainer = document.getElementById('admin-addons');
-    if (!menuContainer || !addonContainer) return;
+    const reviewsContainer = document.getElementById('admin-reviews');
+    if (!menuContainer || !addonContainer || !reviewsContainer) return;
     const items = await getStoredMenuItems();
     const menuItems = items.filter(item => item.category !== 'Add-Ons');
     const addonItems = items.filter(item => item.category === 'Add-Ons');
+    const reviews = await getStoredReviews();
 
     menuContainer.innerHTML = '';
     addonContainer.innerHTML = '';
+    reviewsContainer.innerHTML = '';
 
     menuItems.forEach((item, index) => {
         const globalIndex = items.indexOf(item);
@@ -254,6 +317,73 @@ async function renderAdminItems() {
     addonItems.forEach((item, index) => {
         const globalIndex = items.indexOf(item);
         addonContainer.appendChild(createAdminCard(item, globalIndex, true));
+    });
+
+    reviews.forEach((review, index) => {
+        reviewsContainer.appendChild(createAdminReviewCard(review, index));
+    });
+}
+
+function createAdminReviewCard(review, index) {
+    const card = document.createElement('div');
+    card.className = 'admin-review-card';
+    card.dataset.index = index;
+    card.innerHTML = `
+            <div class="review-image">
+                <img class="review-image-preview" src="${review.image || ADMIN_PLACEHOLDER_IMAGE}" alt="${review.name}">
+                <div>
+                    <label>Reviewer name</label>
+                    <input type="text" class="review-name" value="${review.name}">
+                    <label>Image URL</label>
+                    <input type="text" class="review-image-url" value="${review.image}" placeholder="https://example.com/photo.jpg">
+                </div>
+            </div>
+            <div>
+                <label>Review comment</label>
+                <textarea class="review-comment">${review.comment}</textarea>
+            </div>
+            <div class="admin-actions">
+                <button type="button" class="btn btn-alt save-review">Save review</button>
+                <button type="button" class="btn remove-review">Remove review</button>
+            </div>
+        `;
+    return card;
+}
+
+function createReviewCard(review) {
+    const card = document.createElement('div');
+    card.className = 'review-card';
+    card.innerHTML = `
+        <i class="fas fa-quote-left quote-icon"></i>
+        <img src="${review.image || ADMIN_PLACEHOLDER_IMAGE}" alt="${review.name}" class="review-card-img">
+        <p>${review.comment}</p>
+        <div class="review-meta"><span>– ${review.name}</span><span class="rating">⭐⭐⭐⭐⭐</span></div>
+    `;
+    return card;
+}
+
+async function renderReviewsPage() {
+    const grid = document.getElementById('review-grid');
+    if (!grid) return;
+    const reviews = await getStoredReviews();
+    grid.innerHTML = '';
+    reviews.forEach(review => {
+        grid.appendChild(createReviewCard(review));
+    });
+}
+
+function collectAdminReviews() {
+    const cards = Array.from(document.querySelectorAll('.admin-review-card'));
+    return cards.map(card => {
+        const nameInput = card.querySelector('.review-name');
+        const commentInput = card.querySelector('.review-comment');
+        const imageInput = card.querySelector('.review-image-url');
+        return {
+            id: slugify(nameInput.value) || `review-${Date.now()}`,
+            name: nameInput.value,
+            comment: commentInput.value,
+            image: imageInput.value || ''
+        };
     });
 }
 
@@ -369,10 +499,27 @@ function wireAdminEvents() {
         };
     }
 
+    const addReviewButton = document.getElementById('add-review');
+    if (addReviewButton) {
+        addReviewButton.onclick = async () => {
+            const reviews = await getStoredReviews();
+            reviews.unshift({
+                id: `new-review-${Date.now()}`,
+                name: 'New reviewer',
+                comment: 'Enter a review comment.',
+                image: ''
+            });
+            await saveReviews(reviews);
+            await renderAdminItems();
+        };
+    }
+
     if (saveButton) {
         saveButton.onclick = async () => {
             const items = collectAdminItems();
             await saveMenuItems(items);
+            const reviews = collectAdminReviews();
+            saveReviews(reviews);
             await renderAdminItems();
         };
     }
@@ -402,14 +549,52 @@ function wireAdminEvents() {
                 if (imageInput) imageInput.value = '';
                 if (preview) preview.src = EMPTY_IMAGE_SRC;
             }
+            if (event.target.closest('.save-review')) {
+                const reviews = collectAdminReviews();
+                await saveReviews(reviews);
+                await renderAdminItems();
+            }
+            if (event.target.closest('.remove-review')) {
+                const card = event.target.closest('.admin-review-card');
+                const index = card ? parseInt(card.dataset.index, 10) : null;
+                if (index !== null && !Number.isNaN(index)) {
+                    const reviews = await getStoredReviews();
+                    reviews.splice(index, 1);
+                    await saveReviews(reviews);
+                    await renderAdminItems();
+                }
+            }
+            if (event.target.closest('.save-review')) {
+                const reviews = collectAdminReviews();
+                saveReviews(reviews);
+                await renderAdminItems();
+            }
+            if (event.target.closest('.remove-review')) {
+                const card = event.target.closest('.admin-review-card');
+                const index = card ? parseInt(card.dataset.index, 10) : null;
+                if (index !== null && !Number.isNaN(index)) {
+                    const reviews = getStoredReviews();
+                    reviews.splice(index, 1);
+                    saveReviews(reviews);
+                    await renderAdminItems();
+                }
+            }
         });
 
         adminSection.addEventListener('input', event => {
             const imageInput = event.target.closest('.image-url');
-            if (!imageInput) return;
-            const card = imageInput.closest('.admin-item');
-            const preview = card.querySelector('.admin-image-preview');
-            preview.src = imageInput.value || EMPTY_IMAGE_SRC;
+            if (imageInput) {
+                const card = imageInput.closest('.admin-item');
+                const preview = card.querySelector('.admin-image-preview');
+                preview.src = imageInput.value || EMPTY_IMAGE_SRC;
+                return;
+            }
+            const reviewImageInput = event.target.closest('.review-image-url');
+            if (reviewImageInput) {
+                const card = reviewImageInput.closest('.admin-review-card');
+                const preview = card.querySelector('.review-image-preview');
+                preview.src = reviewImageInput.value || EMPTY_IMAGE_SRC;
+            }
         });
     }
 }
@@ -417,6 +602,7 @@ function wireAdminEvents() {
 async function initAdmin() {
     await initFirebase();
     await renderMenuPageItems();
+    await renderReviewsPage();
     await renderAdminItems();
     wireAdminEvents();
 }
