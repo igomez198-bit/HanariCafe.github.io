@@ -17,6 +17,18 @@
 
 <body>
 
+    <div id="admin-lock-overlay" class="admin-lock-overlay">
+        <div class="admin-lock-card">
+            <h2>Admin Login</h2>
+            <p>Enter the admin password to access the dashboard.</p>
+            <input id="admin-password-input" type="password" placeholder="Admin password">
+            <div class="admin-lock-actions">
+                <button id="admin-password-submit" class="btn">Unlock</button>
+            </div>
+            <p id="admin-password-error" class="admin-lock-error"></p>
+        </div>
+    </div>
+
     <!-- HEADER -->
     <header class="header">
         <div id="menu-btn" class="fas fa-bars"></div>

@@ -99,6 +99,8 @@ const defaultMenuItems = [
 
 const ADMIN_PLACEHOLDER_IMAGE = 'https://via.placeholder.com/320x240/fff5ef/8b5e48?text=Add+image';
 const EMPTY_IMAGE_SRC = ADMIN_PLACEHOLDER_IMAGE;
+const ADMIN_PASSWORD = 'hanari2026';
+const ADMIN_LOCK_KEY = 'hanariAdminUnlocked';
 
 const categoryMap = {
     'Coffee Series': 'coffee-series-items',
@@ -247,6 +249,69 @@ function slugify(text) {
     return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
+function isAdminUnlocked() {
+    return localStorage.getItem(ADMIN_LOCK_KEY) === 'true';
+}
+
+function setAdminUnlocked(value) {
+    localStorage.setItem(ADMIN_LOCK_KEY, value ? 'true' : 'false');
+}
+
+function showAdminLock() {
+    const overlay = document.getElementById('admin-lock-overlay');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+    }
+}
+
+function hideAdminLock() {
+    const overlay = document.getElementById('admin-lock-overlay');
+    if (overlay) {
+        overlay.classList.add('hidden');
+    }
+}
+
+async function activateAdmin() {
+    await renderMenuPageItems();
+    await renderHomeMenuPreview();
+    await renderReviewsPage();
+    await renderAdminItems();
+    wireAdminEvents();
+}
+
+function setupAdminAuth() {
+    const submitButton = document.getElementById('admin-password-submit');
+    const passwordInput = document.getElementById('admin-password-input');
+    const errorMessage = document.getElementById('admin-password-error');
+
+    if (!submitButton || !passwordInput || !errorMessage) return;
+
+    const unlock = async () => {
+        if (passwordInput.value === ADMIN_PASSWORD) {
+            setAdminUnlocked(true);
+            hideAdminLock();
+            errorMessage.textContent = '';
+            await activateAdmin();
+        } else {
+            errorMessage.textContent = 'Incorrect password. Please try again.';
+        }
+    };
+
+    submitButton.addEventListener('click', unlock);
+    passwordInput.addEventListener('keydown', async event => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            await unlock();
+        }
+    });
+
+    if (isAdminUnlocked()) {
+        hideAdminLock();
+    } else {
+        showAdminLock();
+    }
+}
+
 async function renderMenuPageItems() {
     const wrapper = document.getElementById('menu-items');
     const addonList = document.getElementById('addon-list');
@@ -279,8 +344,10 @@ async function renderHomeMenuPreview() {
     const wrapper = document.getElementById('home-menu-preview');
     if (!wrapper) return;
     const items = await getStoredMenuItems();
+    const popularItems = items.filter(item => item.popular);
+    const previewItems = popularItems.length > 0 ? popularItems.slice(0, 3) : items.slice(0, 3);
     wrapper.innerHTML = '';
-    items.slice(0, 3).forEach(item => {
+    previewItems.forEach(item => {
         wrapper.appendChild(createHomeMenuCard(item));
     });
 }
@@ -476,7 +543,7 @@ function createAdminCard(item, index, isAddon = false) {
                 </div>
             </div>
             <div class="admin-toggle-grid">
-                <label><input type="checkbox" class="item-popular" ${item.popular ? 'checked' : ''}> Popular</label>
+                <label><input type="checkbox" class="item-popular" ${item.popular ? 'checked' : ''}> Popular pick</label>
                 <label><input type="checkbox" class="item-bestseller" ${item.bestSeller ? 'checked' : ''}> Best seller</label>
             </div>
             <div>
@@ -663,6 +730,10 @@ async function initAdmin() {
     await renderAdminItems();
     wireAdminEvents();
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    setupAdminAuth();
+});
 
 window.addEventListener('storage', async event => {
     if (event.key === 'hanariReviews' && document.getElementById('review-grid')) {
