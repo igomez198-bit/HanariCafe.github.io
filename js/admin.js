@@ -132,7 +132,10 @@ async function getStoredMenuItems() {
     if (!stored) return defaultMenuItems.slice();
     try {
         const parsed = JSON.parse(stored);
-        return Array.isArray(parsed) ? parsed : defaultMenuItems.slice();
+        if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed;
+        }
+        return defaultMenuItems.slice();
     } catch (e) {
         return defaultMenuItems.slice();
     }
