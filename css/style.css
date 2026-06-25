@@ -714,6 +714,7 @@ section {
 
 .menu .box-container .box .content {
     width: 100%;
+    text-align: center;
 }
 
 .menu .box-container .box .content h3 {
@@ -722,6 +723,7 @@ section {
     line-height: 1.5;
     margin-bottom: .8rem;
     display: flex;
+    justify-content: center;
     align-items: center;
     gap: .8rem;
 }
