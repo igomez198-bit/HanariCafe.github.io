@@ -1093,55 +1093,54 @@ section {
         align-items: center;
     }
 
+    .header .logo {
+        order: 1;
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+
+    .header .btn {
+        order: 2;
+        width: auto;
+        max-width: 100%;
+    }
+
+    .header-info {
+        display: none;
+    }
+
     #menu-btn {
         display: block;
+        order: 3;
     }
 
     #menu-btn.fa-times {
         transform: rotate(180deg);
     }
 
-    .header .logo {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
-    .header-info {
-        width: 100%;
-        order: 3;
-        text-align: left;
-        font-size: 1.4rem;
-        gap: .3rem;
-        padding: 0 0.2rem;
-    }
-
-    .header .btn {
-        order: 2;
-        width: 100%;
-        max-width: 28rem;
-        text-align: center;
-    }
-
     .header .navbar {
-        position: relative;
-        top: 0;
+        position: absolute;
+        top: 100%;
         left: 0;
         right: 0;
         width: 100%;
         background: #fff;
-        border-radius: 1.4rem;
+        border-radius: 0 0 1.4rem 1.4rem;
         border: var(--border);
-        box-shadow: 0 .8rem 1.8rem rgba(108, 63, 47, .12);
+        box-shadow: 0 1.2rem 2.2rem rgba(108, 63, 47, .12);
         overflow: hidden;
         max-height: 0;
         opacity: 0;
         visibility: hidden;
         transition: max-height .35s ease, opacity .35s ease, visibility .35s ease;
-        margin-top: .8rem;
+        margin-top: .5rem;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
     }
 
     .header .navbar.active {
-        max-height: 40rem;
+        max-height: 80rem;
         opacity: 1;
         visibility: visible;
     }
