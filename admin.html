@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hanari Cafe Admin</title>
+    <meta name="description" content="Admin dashboard for Hanari Cafe menu management." />
+
+    <!-- Font Awesome CDN Link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Custom CSS File Link  -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .admin-page {
+            padding-top: 9rem;
+            background: #fff;
+            padding: 9rem 9% 4rem;
+        }
+
+        .admin-page .section-copy {
+            max-width: 88rem;
+            margin: 1rem auto 2rem;
+            font-size: 1.8rem;
+            color: #5d4338;
+            text-align: center;
+        }
+
+        .admin-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-items {
+            display: grid;
+            gap: 2rem;
+            max-width: 120rem;
+            margin: 0 auto 4rem;
+        }
+
+        .admin-item {
+            background: #fff;
+            border: var(--border);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        .admin-item h3 {
+            font-size: 2.2rem;
+            color: var(--main-color);
+        }
+
+        .admin-item label {
+            display: block;
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #5d4338;
+            margin-bottom: .6rem;
+        }
+
+        .admin-item input,
+        .admin-item textarea,
+        .admin-item select {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: var(--border);
+            border-radius: 1.2rem;
+            font-size: 1.6rem;
+            background: rgba(255,255,255,.95);
+            color: #5d4338;
+        }
+
+        .admin-item textarea {
+            min-height: 12rem;
+            resize: vertical;
+        }
+
+        .admin-item .admin-meta {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.6rem;
+        }
+
+        .admin-item .admin-image {
+            display: grid;
+            gap: 1rem;
+            align-items: start;
+            grid-template-columns: 12rem 1fr;
+        }
+
+        .admin-item .admin-image img {
+            width: 100%;
+            height: auto;
+            border-radius: 1.4rem;
+            object-fit: cover;
+            box-shadow: 0 .8rem 1.6rem rgba(108,63,47,.12);
+        }
+
+        .admin-item .image-controls {
+            display: grid;
+            gap: 1rem;
+            margin-top: .6rem;
+        }
+
+        .admin-item .clear-image {
+            width: fit-content;
+            padding: .8rem 1.2rem;
+        }
+
+        .admin-item .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: flex-end;
+        }
+
+        .admin-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .admin-section {
+            background: rgba(255,255,255,.95);
+            border: var(--border);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+            margin-bottom: 2rem;
+        }
+
+        .admin-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 2.3fr) minmax(28rem, 1fr);
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .admin-sidebar-box {
+            background: rgba(255,255,255,.95);
+            border: var(--border);
+            border-radius: 2rem;
+            padding: 2rem;
+            box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+        }
+
+        .admin-sidebar-box h2 {
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            color: var(--main-color);
+        }
+
+        .admin-addons {
+            display: grid;
+            gap: 1.6rem;
+        }
+
+        @media (max-width: 950px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .admin-message {
+            max-width: 88rem;
+            margin: 0 auto 1rem;
+            padding: 1.4rem 1.8rem;
+            border-radius: 1.4rem;
+            background: rgba(255, 255, 255, .95);
+            border: var(--border);
+            font-size: 1.6rem;
+            color: #4d3425;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div id="menu-btn" class="fas fa-bars"></div>
+
+        <a href="index.html" class="logo">
+            <img src="image/logo.svg" alt="Hanari Cafe logo" class="logo-img">
+        </a>
+
+        <nav class="navbar">
+            <a href="index.html#home">home</a>
+            <a href="index.html#about">about</a>
+            <a href="menu.html">menu</a>
+            <a href="index.html#gallery">gallery</a>
+            <a href="index.html#reserve">reserve</a>
+            <a href="index.html#location">location</a>
+        </nav>
+
+        <div class="header-info">
+            <span>🕰️ OPEN DAILY | 3PM - 12AM</span>
+            <span>📍 02 Purok 1, Buensuceso, Arayat, Pampanga</span>
+        </div>
+
+        <a href="index.html#location" class="btn">view location</a>
+    </header>
+
+    <section class="admin-page" id="admin">
+        <h1 class="heading">admin <span>menu manager</span></h1>
+        <p class="section-copy">Manage menu items and add-ons separately. Changes are saved locally in the browser.</p>
+
+        <div class="admin-controls">
+            <button type="button" class="btn btn-alt" id="add-item">Add menu item</button>
+            <button type="button" class="btn btn-alt" id="add-addon">Add add-on</button>
+            <button type="button" class="btn" id="save-menu">Save changes</button>
+        </div>
+
+        <div id="admin-message" class="admin-message"></div>
+
+        <div class="admin-layout">
+            <div class="admin-section">
+                <h2>Menu items</h2>
+                <div id="admin-items" class="admin-items"></div>
+            </div>
+
+            <div class="admin-sidebar-box">
+                <h2>Add-ons</h2>
+                <div id="admin-addons" class="admin-addons"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <section class="footer">
+        <div class="box-container">
+            <div class="box">
+                <h3>our branches</h3>
+                <a href="https://www.google.com/maps/search/?api=1&query=15.1995116,120.6707107"><i class="fas fa-arrow-right"></i> Pampanga</a>
+            </div>
+
+            <div class="box">
+                <h3>quick links</h3>
+                <a href="index.html#home"><i class="fas fa-arrow-right"></i> home</a>
+                <a href="index.html#about"><i class="fas fa-arrow-right"></i> about</a>
+                <a href="menu.html"><i class="fas fa-arrow-right"></i> menu</a>
+                <a href="index.html#gallery"><i class="fas fa-arrow-right"></i> gallery</a>
+                <a href="index.html#location"><i class="fas fa-arrow-right"></i> location</a>
+                <a href="admin.html"><i class="fas fa-arrow-right"></i> admin</a>
+            </div>
+
+            <div class="box">
+                <h3>contact info</h3>
+                <a href="tel:09168884682"><i class="fas fa-phone"></i> 09168884682</a>
+                <a href="https://www.facebook.com/messages/t/997109073488053" target="_blank" rel="noreferrer"><i class="fab fa-facebook-f"></i> Messenger</a>
+                <a href="https://www.facebook.com/profile.php?id=61587623434607" target="_blank" rel="noreferrer"><i class="fab fa-facebook-f"></i> Facebook</a>
+                <a href="#"><i class="fas fa-map-marker-alt"></i> Buensuceso, Arayat</a>
+            </div>
+
+            <div class="box">
+                <h3>follow us</h3>
+                <a href="https://www.facebook.com/profile.php?id=61587623434607" target="_blank" rel="noreferrer"><i class="fab fa-facebook-f"></i> Message us on Facebook</a>
+                <a href="#"><i class="fab fa-instagram"></i> instagram</a>
+                <a href="#"><i class="fab fa-tiktok"></i> tiktok</a>
+                <a href="#"><i class="fab fa-youtube"></i> youtube</a>
+                <a href="#"><i class="fab fa-twitter"></i> twitter</a>
+            </div>
+        </div>
+
+        <div class="credit">Brought to you by <span> Hanari Cafe</span> | all rights reserved</div>
+    </section>
+
+    <!-- Custom JS File Link  -->
+    <script src="js/script.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

@@ -46,88 +46,15 @@
     <!-- MENU -->
     <section class="menu" id="menu">
         <h1 class="heading">menu <span>every sip counts</span></h1>
-        <p class="section-copy">From handcrafted lattes and floral brews to sweet sips, our menu includes only the items from your original menu images.</p>
+        <p class="section-copy">All items shown here are loaded from the admin page. Add, edit, or remove menu items in admin to update this list.</p>
 
-        <div class="menu-group">
-            <h2>Featured Drinks</h2>
-            <div class="box-container">
-                <a href="#" class="box">
-                    <img src="image/Pasted Image.png" alt="Banana Pudding Matcha">
-                    <div class="content">
-                        <h3>banana pudding matcha</h3>
-                        <p>A creamy matcha latte topped with banana pudding crunch.</p>
-                        <span>$7.49</span>
-                    </div>
-                </a>
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 2.png" alt="Coffee Jelly Frappe">
-                    <div class="content">
-                        <h3>coffee jelly frappe</h3>
-                        <p>Classic frappe with coffee jelly pieces for a silky, chewy finish.</p>
-                        <span>$6.99</span>
-                    </div>
-                </a>
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 3.png" alt="Matcha Biscoff Frappe">
-                    <div class="content">
-                        <h3>matcha biscoff frappe</h3>
-                        <p>Green tea frappe with Biscoff swirl and crunchy biscuit topping.</p>
-                        <span>$7.99</span>
-                    </div>
-                </a>
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 9.png" alt="Biscoff Latte">
-                    <div class="content">
-                        <h3>biscoff latte</h3>
-                        <p>Rich espresso with sweet Biscoff cream and a caramel finish.</p>
-                        <span>$5.49</span>
-                    </div>
-                </a>
-            </div>
-        </div>
+        <div class="menu-layout">
+            <div class="box-container" id="menu-items"></div>
 
-        <div class="menu-group">
-            <h2>Signature Lattes</h2>
-            <div class="box-container">
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 4.png" alt="Okinawa Milktea">
-                    <div class="content">
-                        <h3>okinawa milktea</h3>
-                        <p>Caramel-rich milk tea with Okinawa brown sugar flavor.</p>
-                        <span>$5.99</span>
-                    </div>
-                </a>
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 7.png" alt="Spanish Latte">
-                    <div class="content">
-                        <h3>spanish latte</h3>
-                        <p>Classic Spanish latte with creamy espresso and sweet milk.</p>
-                        <span>$8.49</span>
-                    </div>
-                </a>
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 8.png" alt="Sea Salt Matcha Latte">
-                    <div class="content">
-                        <h3>sea salt matcha latte</h3>
-                        <p>Velvety matcha with a subtle sea salt foam on top.</p>
-                        <span>$6.25</span>
-                    </div>
-                </a>
-            </div>
-        </div>
-
-        <div class="menu-group">
-            <h2>Snacks</h2>
-            <div class="box-container">
-                <a href="#" class="box">
-                    <img src="image/Pasted Image 5.png" alt="Onion Rings">
-                    <div class="content">
-                        <h3>onion rings</h3>
-                        <p>Golden, crunchy rings served with a creamy dip.</p>
-                        <span>$4.75</span>
-                    </div>
-                </a>
-            </div>
+            <aside class="addon-card">
+                <h2>Add-Ons</h2>
+                <div id="addon-list" class="addon-list"></div>
+            </aside>
         </div>
 
         <div class="menu-actions">
@@ -151,6 +78,7 @@
                 <a href="menu.html"><i class="fas fa-arrow-right"></i> menu</a>
                 <a href="index.html#gallery"><i class="fas fa-arrow-right"></i> gallery</a>
                 <a href="index.html#location"><i class="fas fa-arrow-right"></i> location</a>
+                <a href="admin.html"><i class="fas fa-arrow-right"></i> admin</a>
             </div>
 
             <div class="box">
@@ -176,6 +104,7 @@
 
     <!-- Custom JS File Link  -->
     <script src="js/script.js"></script>
+    <script src="js/admin.js"></script>
 
 </body>
 

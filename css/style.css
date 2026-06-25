@@ -520,11 +520,125 @@ section {
     position: relative;
     z-index: 1;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 1fr));
     gap: 2rem;
     padding: 0 2rem;
-    max-width: 130rem;
+    max-width: none;
+    width: 100%;
     margin: 0 auto;
+}
+
+.menu-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(28rem, 28rem);
+    gap: 2rem;
+    align-items: start;
+    max-width: 148rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.menu-grid {
+    display: block;
+}
+
+.addon-card {
+    position: sticky;
+    top: 6rem;
+    align-self: start;
+}
+
+@media (max-width: 1400px) {
+    .menu .box-container {
+        grid-template-columns: repeat(auto-fit, minmax(26rem, 1fr));
+    }
+}
+
+@media (max-width: 1100px) {
+    .menu .box-container {
+        grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    }
+}
+
+@media (max-width: 950px) {
+    .menu-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .addon-card {
+        position: relative;
+        top: auto;
+        width: auto;
+        margin: 2rem 2rem 0;
+    }
+}
+
+.addon-card {
+    max-width: 130rem;
+    margin: 2rem auto 0;
+    padding: 2rem;
+    border: var(--border);
+    border-radius: var(--border-radius);
+    background: rgba(255,255,255,.95);
+    box-shadow: 0 1.5rem 2.8rem rgba(108, 63, 47, .1);
+}
+
+.addon-card h2 {
+    margin-bottom: 1.6rem;
+    font-size: 2rem;
+    color: var(--main-color);
+}
+
+.addon-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.addon-list-item {
+    padding: 1.6rem 1.8rem;
+    border: var(--border);
+    border-radius: 1.4rem;
+    background: #fff;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+}
+
+.addon-list-item h3 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: #5d4338;
+}
+
+.addon-list-item p {
+    margin: .4rem 0 0;
+    color: #6c4c3d;
+    font-size: 1.4rem;
+}
+
+.addon-list-item span {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--main-color);
+}
+
+@media (max-width: 1200px) {
+    .menu .box-container {
+        grid-template-columns: repeat(3, minmax(20rem, 1fr));
+    }
+}
+
+@media (max-width: 900px) {
+    .menu .box-container {
+        grid-template-columns: repeat(2, minmax(18rem, 1fr));
+    }
+}
+
+@media (max-width: 650px) {
+    .menu .box-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 .menu .box-container .box {
