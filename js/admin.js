@@ -24,6 +24,7 @@ async function initFirebase() {
         const app = initializeApp(firebaseConfig);
         firebaseDb = getDatabase(app);
         isFirebaseReady = true;
+        console.log('Firebase initialized successfully');
     } catch (error) {
         console.warn('Firebase could not initialize; falling back to localStorage.', error);
     }
@@ -120,6 +121,7 @@ async function getStoredMenuItems() {
     if (isFirebaseReady) {
         try {
             const snapshot = await get(child(ref(firebaseDb), 'menuItems'));
+            console.log('Firebase read snapshot:', snapshot.exists(), snapshot.val());
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 return Array.isArray(data) ? data : Object.values(data);
@@ -147,7 +149,9 @@ async function saveMenuItems(items) {
 
     if (isFirebaseReady) {
         try {
+            console.log('Saving menu items to Firebase:', items);
             await set(ref(firebaseDb, 'menuItems'), items);
+            console.log('Firebase save completed');
             showAdminMessage('Menu saved to Firebase.');
             return;
         } catch (error) {
