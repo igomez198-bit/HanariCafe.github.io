@@ -1656,6 +1656,27 @@ section {
     justify-content: center;
 }
 
+.admin-lock-close {
+    position: absolute;
+    top: 1.4rem;
+    right: 1.4rem;
+    width: 3.2rem;
+    height: 3.2rem;
+    border: none;
+    background: rgba(108, 63, 47, .08);
+    color: #5d4338;
+    border-radius: 50%;
+    font-size: 2rem;
+    line-height: 1;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+}
+
+.admin-lock-close:hover {
+    background: rgba(108, 63, 47, .14);
+}
+
 .admin-lock-error {
     margin-top: 1rem;
     color: #cb3d40;

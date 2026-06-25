@@ -305,6 +305,13 @@ function setupAdminAuth() {
         }
     });
 
+    const closeButton = document.getElementById('admin-lock-close');
+    if (closeButton) {
+        closeButton.addEventListener('click', () => {
+            hideAdminLock();
+        });
+    }
+
     if (isAdminUnlocked()) {
         hideAdminLock();
     } else {
