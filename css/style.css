@@ -942,6 +942,17 @@ section {
     font-size: 1.5rem;
     color: #5d4338;
     line-height: 1.7;
+    margin-bottom: .8rem;
+}
+
+.location .details .info-item p a {
+    color: var(--main-color);
+    text-decoration: none;
+    display: inline-block;
+}
+
+.location .details .info-item p a:hover {
+    text-decoration: underline;
 }
 
 .location .details .btn {
