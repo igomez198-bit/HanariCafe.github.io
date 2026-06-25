@@ -97,6 +97,7 @@ const defaultMenuItems = [
 ];
 
 const ADMIN_PLACEHOLDER_IMAGE = 'https://via.placeholder.com/320x240/fff5ef/8b5e48?text=Add+image';
+const EMPTY_IMAGE_SRC = ADMIN_PLACEHOLDER_IMAGE;
 
 const categoryMap = {
     'Coffee Series': 'coffee-series-items',
@@ -373,20 +374,20 @@ function wireAdminEvents() {
     }
 
     if (adminSection) {
-        adminSection.addEventListener('click', event => {
+        adminSection.addEventListener('click', async event => {
             if (event.target.closest('.save-item')) {
                 const items = collectAdminItems();
-                saveMenuItems(items);
-                renderAdminItems();
+                await saveMenuItems(items);
+                await renderAdminItems();
             }
             if (event.target.closest('.remove-item')) {
                 const card = event.target.closest('.admin-item');
                 const index = card ? parseInt(card.dataset.index, 10) : null;
                 if (index !== null && !Number.isNaN(index)) {
-                    const items = getStoredMenuItems();
+                    const items = await getStoredMenuItems();
                     items.splice(index, 1);
-                    saveMenuItems(items);
-                    renderAdminItems();
+                    await saveMenuItems(items);
+                    await renderAdminItems();
                 }
             }
             if (event.target.closest('.clear-image')) {
