@@ -193,6 +193,17 @@ async function getStoredReviews() {
 async function saveReviews(reviews) {
     localStorage.setItem('hanariReviews', JSON.stringify(reviews));
 
+    if (document.getElementById('review-grid')) {
+        await renderReviewsPage();
+    }
+
+    if (window.location.pathname.endsWith('index.html') || window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        const reviewSection = document.getElementById('reviews');
+        if (reviewSection) {
+            reviewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+
     if (isFirebaseReady) {
         try {
             await set(ref(firebaseDb, 'reviews'), reviews);
