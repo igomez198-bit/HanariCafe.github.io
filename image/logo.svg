@@ -1,0 +1,12 @@
+<svg width="320" height="140" viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .headline { font: 800 48px 'Playfair Display', 'Georgia', serif; fill: #c16a79; letter-spacing: 0.18em; }
+      .subtext { font: 500 40px 'Great Vibes', cursive; fill: #3b6c44; }
+      .tagline { font: 400 18px 'Poppins', sans-serif; fill: #6c4d42; letter-spacing: 0.1em; }
+    </style>
+  </defs>
+  <text x="0" y="52" class="headline">HANARI</text>
+  <text x="0" y="105" class="subtext">Cafe</text>
+  <text x="260" y="130" class="tagline">EST. 2026</text>
+</svg>

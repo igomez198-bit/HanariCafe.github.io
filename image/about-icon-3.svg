@@ -1,0 +1,14 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .stroke { fill: none; stroke: #8b5e48; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      .fill { fill: #f8e9e0; }
+    </style>
+  </defs>
+  <rect x="20" y="36" width="80" height="60" rx="14" class="fill" />
+  <path class="stroke" d="M32 36v56" />
+  <path class="stroke" d="M88 36v56" />
+  <path class="stroke" d="M20 62h80" />
+  <path class="stroke" d="M60 20v16" />
+  <circle cx="60" cy="78" r="10" class="stroke" />
+</svg>

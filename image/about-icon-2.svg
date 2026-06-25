@@ -1,0 +1,12 @@
+<svg width="120" height="120" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .line { fill: none; stroke: #8b5e48; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      .fill { fill: #f5e5d9; }
+    </style>
+  </defs>
+  <path class="fill" d="M32 68h56v18a8 8 0 0 1-8 8H40a8 8 0 0 1-8-8V68z" />
+  <path class="line" d="M40 68V44h40v24" />
+  <path class="line" d="M48 44a6 6 0 0 1 12 0" />
+  <path class="line" d="M40 58h40" />
+</svg>
