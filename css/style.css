@@ -1085,8 +1085,77 @@ section {
         font-size: 2.3rem;
     }
 
+    .header {
+        padding: 1.6rem 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     #menu-btn {
-        display: initial;
+        display: block;
+    }
+
+    #menu-btn.fa-times {
+        transform: rotate(180deg);
+    }
+
+    .header .logo {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+
+    .header-info {
+        width: 100%;
+        order: 3;
+        text-align: left;
+        font-size: 1.4rem;
+        gap: .3rem;
+        padding: 0 0.2rem;
+    }
+
+    .header .btn {
+        order: 2;
+        width: 100%;
+        max-width: 28rem;
+        text-align: center;
+    }
+
+    .header .navbar {
+        position: relative;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        background: #fff;
+        border-radius: 1.4rem;
+        border: var(--border);
+        box-shadow: 0 .8rem 1.8rem rgba(108, 63, 47, .12);
+        overflow: hidden;
+        max-height: 0;
+        opacity: 0;
+        visibility: hidden;
+        transition: max-height .35s ease, opacity .35s ease, visibility .35s ease;
+        margin-top: .8rem;
+    }
+
+    .header .navbar.active {
+        max-height: 40rem;
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .header .navbar a {
+        display: block;
+        font-size: 2.2rem;
+        margin: 0;
+        padding: 1.3rem 1.5rem;
+        border-bottom: 1px solid rgba(108, 63, 47, .08);
+    }
+
+    .header .navbar a:last-child {
+        border-bottom: none;
     }
 
     .hero-buttons {
@@ -1109,30 +1178,6 @@ section {
 
     .icons {
         flex: 1 1 100%;
-    }
-
-    #menu-btn.fa-times {
-        transform: rotate(180deg);
-    }
-
-    .header .navbar {
-        position: absolute;
-        top: 99%;
-        left: 0;
-        right: 0;
-        background: #fff;
-        clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
-    }
-
-    .header .navbar.active {
-        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-    }
-
-    .header .navbar a {
-        display: block;
-        font-size: 2.2rem;
-        margin: 0;
-        padding: 1.5rem 2rem;
     }
 
     .home {
