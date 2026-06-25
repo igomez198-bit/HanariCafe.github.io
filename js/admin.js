@@ -312,6 +312,10 @@ function setupAdminAuth() {
         });
     }
 
+    window.addEventListener('pagehide', () => {
+        setAdminUnlocked(false);
+    });
+
     if (isAdminUnlocked()) {
         hideAdminLock();
     } else {
