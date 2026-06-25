@@ -264,6 +264,37 @@ async function renderMenuPageItems() {
     }
 }
 
+async function renderHomeMenuPreview() {
+    const wrapper = document.getElementById('home-menu-preview');
+    if (!wrapper) return;
+    const items = await getStoredMenuItems();
+    wrapper.innerHTML = '';
+    items.slice(0, 3).forEach(item => {
+        wrapper.appendChild(createHomeMenuCard(item));
+    });
+}
+
+function createHomeMenuCard(item) {
+    const imgSrc = item.image || ADMIN_PLACEHOLDER_IMAGE;
+    const anchor = document.createElement('a');
+    anchor.href = `menu.html#${item.id}`;
+    anchor.className = 'box';
+    anchor.innerHTML = `
+        <div class="item-badges">
+            ${item.popular ? '<span class="badge badge-popular">Popular</span>' : ''}
+            ${item.bestSeller ? '<span class="badge badge-bestseller">Best seller</span>' : ''}
+        </div>
+        <img src="${imgSrc}" alt="${item.name}">
+        <div class="content">
+            <h3>${item.name}</h3>
+            <p class="item-category">${item.category}</p>
+            <p>${item.description}</p>
+            <span>₱${item.price}</span>
+        </div>
+    `;
+    return anchor;
+}
+
 function createMenuItemCard(item, isAddon = false) {
     const imgSrc = item.image || ADMIN_PLACEHOLDER_IMAGE;
     const anchor = document.createElement('a');
@@ -271,6 +302,10 @@ function createMenuItemCard(item, isAddon = false) {
     anchor.id = item.id;
     anchor.className = 'box';
     anchor.innerHTML = `
+        <div class="item-badges">
+            ${item.popular ? '<span class="badge badge-popular">Popular</span>' : ''}
+            ${item.bestSeller ? '<span class="badge badge-bestseller">Best seller</span>' : ''}
+        </div>
         <img src="${imgSrc}" alt="${item.name}">
         <div class="content">
             <h3>${item.name}</h3>
@@ -429,6 +464,10 @@ function createAdminCard(item, index, isAddon = false) {
                     <input type="text" class="item-price" value="${item.price}">
                 </div>
             </div>
+            <div class="admin-toggle-grid">
+                <label><input type="checkbox" class="item-popular" ${item.popular ? 'checked' : ''}> Popular</label>
+                <label><input type="checkbox" class="item-bestseller" ${item.bestSeller ? 'checked' : ''}> Best seller</label>
+            </div>
             <div>
                 <label>Description</label>
                 <textarea class="item-description">${item.description}</textarea>
@@ -456,7 +495,9 @@ function collectAdminItems() {
             name: nameInput.value,
             description: descriptionInput.value,
             price: priceInput.value,
-            image: imageInput.value || ''
+            image: imageInput.value || '',
+            popular: !!card.querySelector('.item-popular').checked,
+            bestSeller: !!card.querySelector('.item-bestseller').checked
         };
     });
 }
@@ -476,7 +517,9 @@ function wireAdminEvents() {
                 name: 'new item',
                 description: 'Enter item description.',
                 price: '0.00',
-                image: ''
+                image: '',
+                bestSeller: false,
+                popular: false
             });
             await saveMenuItems(items);
             await renderAdminItems();
@@ -492,7 +535,9 @@ function wireAdminEvents() {
                 name: 'new add-on',
                 description: 'Enter add-on description.',
                 price: '0.00',
-                image: ''
+                image: '',
+                bestSeller: false,
+                popular: false
             });
             await saveMenuItems(items);
             await renderAdminItems();
@@ -519,7 +564,7 @@ function wireAdminEvents() {
             const items = collectAdminItems();
             await saveMenuItems(items);
             const reviews = collectAdminReviews();
-            saveReviews(reviews);
+            await saveReviews(reviews);
             await renderAdminItems();
         };
     }
@@ -602,10 +647,25 @@ function wireAdminEvents() {
 async function initAdmin() {
     await initFirebase();
     await renderMenuPageItems();
+    await renderHomeMenuPreview();
     await renderReviewsPage();
     await renderAdminItems();
     wireAdminEvents();
 }
+
+window.addEventListener('storage', async event => {
+    if (event.key === 'hanariReviews' && document.getElementById('review-grid')) {
+        await renderReviewsPage();
+    }
+    if (event.key === MENU_STORAGE_KEY) {
+        if (document.getElementById('menu-items')) {
+            await renderMenuPageItems();
+        }
+        if (document.getElementById('home-menu-preview')) {
+            await renderHomeMenuPreview();
+        }
+    }
+});
 
 if (document.readyState !== 'loading') {
     initAdmin();
