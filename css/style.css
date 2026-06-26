@@ -760,6 +760,23 @@ section {
     padding: .8rem 0 1.2rem;
 }
 
+.menu .box-container .box .content .item-prices {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.menu .box-container .box .content .item-prices span {
+    font-size: 1.5rem;
+    color: #8b5e48;
+    background: rgba(255, 255, 255, .85);
+    border: 1px solid rgba(108, 63, 47, .12);
+    border-radius: 1.2rem;
+    padding: .5rem 1rem;
+}
+
 .menu .box-container .box .content span {
     font-size: 2rem;
     color: #5d4338;
@@ -1860,7 +1877,7 @@ section {
 
 .admin-item .admin-meta {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1.4rem;
 }
 

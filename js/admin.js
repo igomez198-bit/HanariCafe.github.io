@@ -117,6 +117,89 @@ const categoryMap = {
     'Rice Bowls': 'rice-bowls-items'
 };
 
+function parseCsv(text) {
+    const rows = [];
+    let current = '';
+    let inQuotes = false;
+    let row = [];
+
+    for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const next = text[i + 1];
+
+        if (char === '"') {
+            if (inQuotes && next === '"') {
+                current += '"';
+                i += 1;
+            } else {
+                inQuotes = !inQuotes;
+            }
+            continue;
+        }
+
+        if (char === ',' && !inQuotes) {
+            row.push(current);
+            current = '';
+            continue;
+        }
+
+        if ((char === '\n' || char === '\r') && !inQuotes) {
+            if (current !== '' || row.length > 0) {
+                row.push(current);
+                rows.push(row);
+                row = [];
+                current = '';
+            }
+            if (char === '\r' && next === '\n') {
+                i += 1;
+            }
+            continue;
+        }
+
+        current += char;
+    }
+
+    if (current !== '' || row.length > 0) {
+        row.push(current);
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+async function loadMenuItemsFromCsv() {
+    try {
+        const response = await fetch('menu.csv');
+        if (!response.ok) return [];
+        const text = await response.text();
+        const rows = parseCsv(text);
+        if (rows.length < 2) return [];
+
+        const headers = rows[0].map(header => header.trim());
+        return rows.slice(1).map((values, index) => {
+            const record = {};
+            headers.forEach((header, idx) => {
+                record[header] = (values[idx] || '').trim();
+            });
+            return {
+                id: slugify(record.Item || record.Name || `item-${index}`),
+                category: record.Category || 'Uncategorized',
+                name: record.Item || record.Name || 'Unnamed item',
+                image: record.Image || '',
+                price: record.Price || '',
+                description: record.Notes || record.Description || '',
+                hot: record.Hot || '',
+                iced: record.Iced || '',
+                popular: String(record.Popular || '').toLowerCase() === 'true',
+                bestSeller: String(record.BestSeller || '').toLowerCase() === 'true'
+            };
+        });
+    } catch (error) {
+        console.warn('Could not load menu.csv:', error);
+        return [];
+    }
+}
+
 async function getStoredMenuItems() {
     await initFirebase();
 
@@ -134,15 +217,23 @@ async function getStoredMenuItems() {
     }
 
     const stored = localStorage.getItem(MENU_STORAGE_KEY);
-    if (!stored) return defaultMenuItems.slice();
+    if (!stored) {
+        const csvItems = await loadMenuItemsFromCsv();
+        if (csvItems.length > 0) {
+            return csvItems;
+        }
+        return defaultMenuItems.slice();
+    }
     try {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
             return parsed;
         }
-        return defaultMenuItems.slice();
+        const csvItems = await loadMenuItemsFromCsv();
+        return csvItems.length > 0 ? csvItems : defaultMenuItems.slice();
     } catch (e) {
-        return defaultMenuItems.slice();
+        const csvItems = await loadMenuItemsFromCsv();
+        return csvItems.length > 0 ? csvItems : defaultMenuItems.slice();
     }
 }
 
@@ -379,6 +470,10 @@ function createHomeMenuCard(item) {
             <h3>${item.name}</h3>
             <p class="item-category">${item.category}</p>
             <p>${item.description}</p>
+            ${item.hot || item.iced ? `<div class="item-prices">
+                ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
+                ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
+            </div>` : ''}
             <span>₱${item.price}</span>
         </div>
     `;
@@ -401,6 +496,10 @@ function createMenuItemCard(item, isAddon = false) {
             <h3>${item.name}</h3>
             ${isAddon ? '<p class="item-category">Add-On</p>' : `<p class="item-category">${item.category}</p>`}
             <p>${item.description}</p>
+            ${!isAddon && (item.hot || item.iced) ? `<div class="item-prices">
+                ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
+                ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
+            </div>` : ''}
             <span>₱${item.price}</span>
         </div>
     `;
@@ -553,6 +652,14 @@ function createAdminCard(item, index, isAddon = false) {
                     <label>Price (PHP)</label>
                     <input type="text" class="item-price" value="${item.price}">
                 </div>
+                <div>
+                    <label>Hot price</label>
+                    <input type="text" class="item-hot" value="${item.hot || ''}" placeholder="e.g. 120">
+                </div>
+                <div>
+                    <label>Iced price</label>
+                    <input type="text" class="item-iced" value="${item.iced || ''}" placeholder="e.g. 130">
+                </div>
             </div>
             <div class="admin-toggle-grid">
                 <label><input type="checkbox" class="item-popular" ${item.popular ? 'checked' : ''}> Popular pick</label>
@@ -578,6 +685,8 @@ function collectAdminItems() {
         const priceInput = card.querySelector('.item-price');
         const categoryInput = card.querySelector('.item-category');
         const imageInput = card.querySelector('.image-url');
+        const hotInput = card.querySelector('.item-hot');
+        const icedInput = card.querySelector('.item-iced');
         const index = parseInt(card.dataset.index, 10);
         return {
             id: slugify(nameInput.value) || `item-${index}`,
@@ -585,6 +694,8 @@ function collectAdminItems() {
             name: nameInput.value,
             description: descriptionInput.value,
             price: priceInput.value,
+            hot: hotInput ? hotInput.value : '',
+            iced: icedInput ? icedInput.value : '',
             image: imageInput.value || '',
             popular: !!card.querySelector('.item-popular').checked,
             bestSeller: !!card.querySelector('.item-bestseller').checked
