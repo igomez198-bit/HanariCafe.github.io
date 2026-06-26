@@ -822,19 +822,51 @@ function wireAdminEvents() {
             }
         });
 
+        function updatePreviewImage(inputElem, previewElem) {
+            const value = inputElem.value.trim();
+            if (!value) {
+                previewElem.src = EMPTY_IMAGE_SRC;
+                return;
+            }
+
+            previewElem.src = value;
+            previewElem.onerror = () => {
+                previewElem.src = EMPTY_IMAGE_SRC;
+            };
+        }
+
         adminSection.addEventListener('input', event => {
             const imageInput = event.target.closest('.image-url');
             if (imageInput) {
                 const card = imageInput.closest('.admin-item');
                 const preview = card.querySelector('.admin-image-preview');
-                preview.src = imageInput.value || EMPTY_IMAGE_SRC;
+                updatePreviewImage(imageInput, preview);
                 return;
             }
             const reviewImageInput = event.target.closest('.review-image-url');
             if (reviewImageInput) {
                 const card = reviewImageInput.closest('.admin-review-card');
                 const preview = card.querySelector('.review-image-preview');
-                preview.src = reviewImageInput.value || EMPTY_IMAGE_SRC;
+                updatePreviewImage(reviewImageInput, preview);
+            }
+        });
+
+        adminSection.addEventListener('paste', event => {
+            const imageInput = event.target.closest('.image-url');
+            if (imageInput) {
+                setTimeout(() => {
+                    const card = imageInput.closest('.admin-item');
+                    const preview = card.querySelector('.admin-image-preview');
+                    updatePreviewImage(imageInput, preview);
+                }, 50);
+            }
+            const reviewImageInput = event.target.closest('.review-image-url');
+            if (reviewImageInput) {
+                setTimeout(() => {
+                    const card = reviewImageInput.closest('.admin-review-card');
+                    const preview = card.querySelector('.review-image-preview');
+                    updatePreviewImage(reviewImageInput, preview);
+                }, 50);
             }
         });
     }
