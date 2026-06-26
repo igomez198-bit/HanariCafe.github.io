@@ -701,6 +701,7 @@ function collectAdminItems() {
 function wireAdminEvents() {
     const addButton = document.getElementById('add-item');
     const addAddonButton = document.getElementById('add-addon');
+    const importCsvButton = document.getElementById('import-csv');
     const saveButton = document.getElementById('save-menu');
     const adminSection = document.getElementById('admin');
 
@@ -737,6 +738,22 @@ function wireAdminEvents() {
             });
             await saveMenuItems(items);
             await renderAdminItems();
+        };
+    }
+
+    if (importCsvButton) {
+        importCsvButton.onclick = async () => {
+            const confirmImport = window.confirm('This will replace the current admin menu with items from menu.csv. Continue?');
+            if (!confirmImport) return;
+
+            const csvItems = await loadMenuItemsFromCsv();
+            if (csvItems.length > 0) {
+                await saveMenuItems(csvItems);
+                await renderAdminItems();
+                showAdminMessage('menu.csv imported successfully.');
+            } else {
+                showAdminMessage('No items found in menu.csv.');
+            }
         };
     }
 
