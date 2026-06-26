@@ -474,7 +474,6 @@ function createHomeMenuCard(item) {
                 ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
                 ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
             </div>` : ''}
-            <span>₱${item.price}</span>
         </div>
     `;
     return anchor;
@@ -500,7 +499,6 @@ function createMenuItemCard(item, isAddon = false) {
                 ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
                 ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
             </div>` : ''}
-            <span>₱${item.price}</span>
         </div>
     `;
     return anchor;
@@ -648,10 +646,7 @@ function createAdminCard(item, index, isAddon = false) {
                         <option ${item.category === 'Rice Bowls' ? 'selected' : ''}>Rice Bowls</option>
                     </select>
                 </div>
-                <div>
-                    <label>Price (PHP)</label>
-                    <input type="text" class="item-price" value="${item.price}">
-                </div>
+                <input type="hidden" class="item-price" value="${item.price}">
                 <div>
                     <label>Hot price</label>
                     <input type="text" class="item-hot" value="${item.hot || ''}" placeholder="e.g. 120">
