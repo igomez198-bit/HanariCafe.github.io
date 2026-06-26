@@ -503,7 +503,7 @@ function createHomeMenuCard(item) {
                 ${item.price ? `<span>₱${item.price}</span>` : ''}
             </div>` : ''}
         </div>
-    `;}
+    `;
     return anchor;
 }
 
