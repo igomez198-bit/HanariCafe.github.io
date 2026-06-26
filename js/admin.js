@@ -822,14 +822,53 @@ function wireAdminEvents() {
             }
         });
 
+        function normalizeImageUrl(url) {
+            const trimmed = url.trim();
+            if (!trimmed) return trimmed;
+
+            try {
+                const parsed = new URL(trimmed);
+                const hostname = parsed.hostname.toLowerCase();
+                const pathname = parsed.pathname.replace(/\/$/, '');
+                const hash = parsed.hash.replace(/^#/, '');
+
+                if (hostname.endsWith('imgur.com')) {
+                    // Already direct Imgur image URL.
+                    if (hostname === 'i.imgur.com') {
+                        return trimmed;
+                    }
+
+                    // If there's a fragment ID, use it as the image id.
+                    if (hash) {
+                        return `https://i.imgur.com/${hash}.jpg`;
+                    }
+
+                    // If the path includes an image id and extension, use it directly.
+                    const pathMatch = pathname.match(/\/([a-zA-Z0-9]+)(\.[a-zA-Z]{3,4})?$/);
+                    if (pathMatch) {
+                        const id = pathMatch[1];
+                        const ext = pathMatch[2] || '.jpg';
+                        return `https://i.imgur.com/${id}${ext}`;
+                    }
+                }
+            } catch (e) {
+                // ignore invalid URLs
+            }
+
+            return trimmed;
+        }
+
         function updatePreviewImage(inputElem, previewElem) {
-            const value = inputElem.value.trim();
-            if (!value) {
+            const normalizedUrl = normalizeImageUrl(inputElem.value);
+            if (!normalizedUrl) {
                 previewElem.src = EMPTY_IMAGE_SRC;
                 return;
             }
 
-            previewElem.src = value;
+            previewElem.src = normalizedUrl;
+            if (normalizedUrl !== inputElem.value.trim()) {
+                inputElem.value = normalizedUrl;
+            }
             previewElem.onerror = () => {
                 previewElem.src = EMPTY_IMAGE_SRC;
             };
