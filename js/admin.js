@@ -181,15 +181,42 @@ async function loadMenuItemsFromCsv() {
             headers.forEach((header, idx) => {
                 record[header] = (values[idx] || '').trim();
             });
+            const rawHot = record.Hot || '';
+            const rawIced = record.Iced || '';
+            const rawPrice = record.Price || '';
+            const categoryKey = (record.Category || '').trim().toLowerCase();
+            const icedOnlyCategories = new Set([
+                'refreshers',
+                'hanari house specials',
+                'frappe & smoothie series',
+                'milktea series'
+            ]);
+
+            let hot = rawHot;
+            let iced = rawIced;
+            let price = rawPrice;
+
+            if (!iced && rawPrice && icedOnlyCategories.has(categoryKey)) {
+                iced = rawPrice;
+                price = '';
+            }
+
+            if (icedOnlyCategories.has(categoryKey) && rawIced && /^\d+(?:\.\d+)?$/.test(rawIced)) {
+                iced = rawIced;
+                price = '';
+            } else if (!price && !hot && rawIced && /^\d+(?:\.\d+)?$/.test(rawIced)) {
+                price = rawIced;
+            }
+
             return {
                 id: slugify(record.Item || record.Name || `item-${index}`),
                 category: record.Category || 'Uncategorized',
                 name: record.Item || record.Name || 'Unnamed item',
                 image: record.Image || '',
-                price: record.Price || '',
+                price: price,
                 description: record.Notes || record.Description || '',
-                hot: record.Hot || '',
-                iced: record.Iced || '',
+                hot: hot,
+                iced: iced,
                 popular: String(record.Popular || '').toLowerCase() === 'true',
                 bestSeller: String(record.BestSeller || '').toLowerCase() === 'true'
             };
@@ -470,13 +497,13 @@ function createHomeMenuCard(item) {
             <h3>${item.name}</h3>
             <p class="item-category">${item.category}</p>
             <p>${item.description}</p>
-            ${item.hot || item.iced ? `<div class="item-prices">
+            ${item.hot || item.iced || item.price ? `<div class="item-prices">
                 ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
                 ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
+                ${item.price ? `<span>₱${item.price}</span>` : ''}
             </div>` : ''}
-            ${item.price ? `<span>₱${item.price}</span>` : ''}
         </div>
-    `;
+    `;}
     return anchor;
 }
 
@@ -496,11 +523,11 @@ function createMenuItemCard(item, isAddon = false) {
             <h3>${item.name}</h3>
             ${isAddon ? '<p class="item-category">Add-On</p>' : `<p class="item-category">${item.category}</p>`}
             <p>${item.description}</p>
-            ${!isAddon && (item.hot || item.iced) ? `<div class="item-prices">
+            ${item.hot || item.iced || item.price ? `<div class="item-prices">
                 ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
                 ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
+                ${item.price ? `<span>₱${item.price}</span>` : ''}
             </div>` : ''}
-            ${item.price ? `<span>₱${item.price}</span>` : ''}
         </div>
     `;
     return anchor;
@@ -648,7 +675,10 @@ function createAdminCard(item, index, isAddon = false) {
                         <option ${item.category === 'Rice Bowls' ? 'selected' : ''}>Rice Bowls</option>
                     </select>
                 </div>
-                <input type="hidden" class="item-price" value="${item.price}">
+                <div>
+                    <label>Price (PHP)</label>
+                    <input type="text" class="item-price" value="${item.price || ''}" placeholder="e.g. 150">
+                </div>
                 <div>
                     <label>Hot price</label>
                     <input type="text" class="item-hot" value="${item.hot || ''}" placeholder="e.g. 120">
