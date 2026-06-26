@@ -474,6 +474,7 @@ function createHomeMenuCard(item) {
                 ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
                 ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
             </div>` : ''}
+            ${item.price ? `<span>₱${item.price}</span>` : ''}
         </div>
     `;
     return anchor;
@@ -499,6 +500,7 @@ function createMenuItemCard(item, isAddon = false) {
                 ${item.hot ? `<span>Hot: ₱${item.hot}</span>` : ''}
                 ${item.iced ? `<span>Iced: ₱${item.iced}</span>` : ''}
             </div>` : ''}
+            ${item.price ? `<span>₱${item.price}</span>` : ''}
         </div>
     `;
     return anchor;
