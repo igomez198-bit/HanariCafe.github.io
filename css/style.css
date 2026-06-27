@@ -833,14 +833,14 @@ section {
 .latest-posts {
     padding: 4rem 0;
     text-align: center;
-    max-width: 160rem;
+    max-width: 120rem;
     margin: 0 auto;
 }
 
 .latest-posts .latest-posts-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(22rem, 34rem));
-    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fit, minmax(30rem, 38rem));
+    gap: 1.5rem;
     margin-top: 3rem;
     justify-content: center;
     justify-items: center;
@@ -850,10 +850,24 @@ section {
     background: rgba(255, 255, 255, .94);
     border: var(--border);
     border-radius: 2rem;
-    padding: 1.6rem;
+    padding: 1.8rem;
     box-shadow: 0 1.2rem 2rem rgba(108, 63, 47, .08);
     width: 100%;
-    max-width: 34rem;
+    max-width: 38rem;
+}
+
+.post-embed {
+    width: 100%;
+    max-width: 100%;
+    min-width: 28rem;
+    overflow: hidden;
+    border-radius: 1.5rem;
+}
+
+.post-embed iframe,
+.post-embed embed {
+    width: 100% !important;
+    min-height: 32rem;
 }
 
 .latest-post-card h3 {
@@ -1898,9 +1912,32 @@ section {
     display: none;
 }
 
+.admin-section-switcher {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.6rem 0;
+    flex-wrap: wrap;
+}
+
+.admin-section-switcher label {
+    font-size: 1.5rem;
+    color: #5d4338;
+}
+
+.admin-section-switcher select {
+    padding: 1rem 1.2rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(108, 63, 47, .15);
+    background: #fff;
+    font-size: 1.5rem;
+    color: #5d4338;
+    min-width: 18rem;
+}
+
 .admin-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.8fr) minmax(24rem, 1fr) minmax(24rem, 1fr);
+    grid-template-columns: minmax(0, 1.6fr) minmax(24rem, 1fr) minmax(24rem, 1fr) minmax(24rem, 1fr);
     gap: 1.8rem;
     align-items: start;
 }
@@ -1908,6 +1945,34 @@ section {
 .admin-review-box {
     display: grid;
     gap: 1.6rem;
+}
+
+.admin-layout[data-section="menu"] .admin-sidebar-box,
+.admin-layout[data-section="menu"] .admin-posts-box,
+.admin-layout[data-section="menu"] .admin-review-box,
+.admin-layout[data-section="addons"] .admin-section,
+.admin-layout[data-section="addons"] .admin-posts-box,
+.admin-layout[data-section="addons"] .admin-review-box,
+.admin-layout[data-section="posts"] .admin-section,
+.admin-layout[data-section="posts"] .admin-sidebar-box,
+.admin-layout[data-section="posts"] .admin-review-box,
+.admin-layout[data-section="reviews"] .admin-section,
+.admin-layout[data-section="reviews"] .admin-sidebar-box,
+.admin-layout[data-section="reviews"] .admin-posts-box {
+    display: none;
+}
+
+.admin-layout[data-section="all"] .admin-section,
+.admin-layout[data-section="all"] .admin-sidebar-box,
+.admin-layout[data-section="all"] .admin-posts-box,
+.admin-layout[data-section="all"] .admin-review-box {
+    display: block;
+}
+
+@media (max-width: 1200px) {
+    .admin-layout {
+        grid-template-columns: 1fr;
+    }
 }
 
 .admin-reviews {
