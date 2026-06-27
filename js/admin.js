@@ -1045,23 +1045,20 @@ function wireAdminEvents() {
     }
 
     const sectionSelector = document.getElementById('admin-section-selector');
+    const historyBox = document.querySelector('.admin-history-box');
+
     if (sectionSelector) {
         sectionSelector.onchange = () => {
             const selected = sectionSelector.value;
             const layout = document.querySelector('.admin-layout');
             if (!layout) return;
             layout.dataset.section = selected;
-        };
-    }
 
-    const toggleHistoryButton = document.getElementById('toggle-history');
-    const historyBox = document.querySelector('.admin-history-box');
-    if (toggleHistoryButton && historyBox) {
-        toggleHistoryButton.onclick = () => {
-            historyBox.classList.toggle('visible');
-            toggleHistoryButton.textContent = historyBox.classList.contains('visible') ? 'Hide history' : 'Show history';
-            if (historyBox.classList.contains('visible')) {
+            if (selected === 'history' && historyBox) {
+                historyBox.classList.add('visible');
                 renderAdminHistory();
+            } else if (historyBox) {
+                historyBox.classList.remove('visible');
             }
         };
     }
