@@ -839,8 +839,8 @@ section {
 
 .latest-posts .latest-posts-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(28rem, 42rem));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 34rem));
+    gap: 1.2rem;
     margin-top: 3rem;
     justify-content: center;
     justify-items: center;
@@ -850,10 +850,10 @@ section {
     background: rgba(255, 255, 255, .94);
     border: var(--border);
     border-radius: 2rem;
-    padding: 2rem;
-    box-shadow: 0 1.6rem 3rem rgba(108, 63, 47, .08);
+    padding: 1.6rem;
+    box-shadow: 0 1.2rem 2rem rgba(108, 63, 47, .08);
     width: 100%;
-    max-width: 42rem;
+    max-width: 34rem;
 }
 
 .latest-post-card h3 {
