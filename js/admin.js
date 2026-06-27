@@ -2,6 +2,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getDatabase, ref, get, set, child } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
 
 const MENU_STORAGE_KEY = 'hanariMenuData';
+const MENU_HISTORY_STORAGE_KEY = 'hanariMenuHistory';
 const LATEST_POSTS_STORAGE_KEY = 'hanariLatestPosts';
 const IMGBB_API_KEY = 'd450b6de911bb328994b58806e4a2fe4';
 
@@ -226,6 +227,87 @@ async function loadMenuItemsFromCsv() {
     } catch (error) {
         console.warn('Could not load menu.csv:', error);
         return [];
+    }
+}
+
+async function getStoredMenuHistory() {
+    const stored = localStorage.getItem(MENU_HISTORY_STORAGE_KEY);
+    if (!stored) return [];
+    try {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveMenuHistory(history) {
+    localStorage.setItem(MENU_HISTORY_STORAGE_KEY, JSON.stringify(history));
+}
+
+async function addMenuHistoryEntry(entry) {
+    const history = await getStoredMenuHistory();
+    history.unshift(entry);
+    if (history.length > 100) history.splice(100);
+    saveMenuHistory(history);
+}
+
+function formatHistoryTimestamp(timestamp) {
+    return new Date(timestamp).toLocaleString();
+}
+
+function createHistoryEntry(entry) {
+    const row = document.createElement('div');
+    row.className = 'history-entry';
+    if (entry.type === 'removed') {
+        row.innerHTML = `
+            <div class="history-entry-main">
+                <strong>${entry.item.name}</strong>
+                <span>${entry.item.category}</span>
+            </div>
+            <div class="history-entry-meta">
+                <span>Removed</span>
+                <span>${formatHistoryTimestamp(entry.timestamp)}</span>
+            </div>
+        `;
+    } else {
+        const label = entry.item ? `Saved ${entry.item.name}` : entry.summary || 'Saved menu items';
+        row.innerHTML = `
+            <div class="history-entry-main">
+                <strong>${label}</strong>
+                ${entry.item ? `<span>${entry.item.category}</span>` : ''}
+            </div>
+            <div class="history-entry-meta">
+                <span>Saved</span>
+                <span>${formatHistoryTimestamp(entry.timestamp)}</span>
+            </div>
+        `;
+    }
+    return row;
+}
+
+async function renderAdminHistory() {
+    const removedContainer = document.getElementById('history-removed');
+    const savedContainer = document.getElementById('history-saved');
+    if (!removedContainer || !savedContainer) return;
+
+    const history = await getStoredMenuHistory();
+    removedContainer.innerHTML = '';
+    savedContainer.innerHTML = '';
+
+    const removedEntries = history.filter(entry => entry.type === 'removed');
+    const savedEntries = history.filter(entry => entry.type === 'saved');
+
+    if (removedEntries.length === 0) {
+        removedContainer.innerHTML = '<p class="history-empty">No removed items yet.</p>';
+    } else {
+        removedEntries.forEach(entry => removedContainer.appendChild(createHistoryEntry(entry)));
+    }
+
+    if (savedEntries.length === 0) {
+        savedContainer.innerHTML = '<p class="history-empty">No saved items yet.</p>';
+    } else {
+        savedEntries.forEach(entry => savedContainer.appendChild(createHistoryEntry(entry)));
     }
 }
 
@@ -963,20 +1045,42 @@ function wireAdminEvents() {
         saveButton.onclick = async () => {
             const items = collectAdminItems();
             await saveMenuItems(items);
+            await addMenuHistoryEntry({
+                id: `history-${Date.now()}`,
+                type: 'saved',
+                summary: `Saved ${items.length} menu item${items.length === 1 ? '' : 's'}`,
+                timestamp: Date.now()
+            });
             const reviews = collectAdminReviews();
             await saveReviews(reviews);
             const posts = collectAdminPosts();
             await saveLatestPosts(posts);
             await renderAdminItems();
             await renderAdminPosts();
+            await renderAdminHistory();
         };
     }
 
     if (adminSection) {
         adminSection.addEventListener('click', async event => {
-            if (event.target.closest('.save-item')) {
+                    if (event.target.closest('.save-item')) {
+                const card = event.target.closest('.admin-item');
+                const index = card ? parseInt(card.dataset.index, 10) : null;
                 const items = collectAdminItems();
                 await saveMenuItems(items);
+                if (index !== null && !Number.isNaN(index) && items[index]) {
+                    await addMenuHistoryEntry({
+                        id: `history-${Date.now()}`,
+                        type: 'saved',
+                        item: {
+                            id: items[index].id,
+                            name: items[index].name,
+                            category: items[index].category
+                        },
+                        timestamp: Date.now()
+                    });
+                    await renderAdminHistory();
+                }
                 await renderAdminItems();
             }
             if (event.target.closest('.remove-item')) {
@@ -984,9 +1088,22 @@ function wireAdminEvents() {
                 const index = card ? parseInt(card.dataset.index, 10) : null;
                 if (index !== null && !Number.isNaN(index)) {
                     const items = await getStoredMenuItems();
-                    items.splice(index, 1);
+                    const removed = items.splice(index, 1)[0];
+                    if (removed) {
+                        await addMenuHistoryEntry({
+                            id: `history-${Date.now()}`,
+                            type: 'removed',
+                            item: {
+                                id: removed.id,
+                                name: removed.name,
+                                category: removed.category
+                            },
+                            timestamp: Date.now()
+                        });
+                    }
                     await saveMenuItems(items);
                     await renderAdminItems();
+                    await renderAdminHistory();
                 }
             }
             if (event.target.closest('.clear-image')) {
@@ -1190,6 +1307,7 @@ async function initAdmin() {
     await renderLatestPostsPage();
     await renderReviewsPage();
     await renderAdminItems();
+    await renderAdminHistory();
     wireAdminEvents();
 }
 
