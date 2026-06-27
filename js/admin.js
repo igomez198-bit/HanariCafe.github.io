@@ -714,10 +714,6 @@ function createAdminPostCard(post, index) {
                 <input type="text" class="post-title" value="${post.title || ''}" placeholder="Post title">
             </div>
             <div>
-                <label>Post caption</label>
-                <input type="text" class="post-caption" value="${post.caption || ''}" placeholder="Short caption">
-            </div>
-            <div>
                 <label>Embed code</label>
                 <textarea class="post-embed-code" rows="6" placeholder="Paste iframe embed code here">${post.embedHtml || ''}</textarea>
             </div>
@@ -735,12 +731,10 @@ function collectAdminPosts() {
     const cards = Array.from(document.querySelectorAll('.admin-post-card'));
     return cards.map((card, index) => {
         const titleInput = card.querySelector('.post-title');
-        const captionInput = card.querySelector('.post-caption');
         const embedInput = card.querySelector('.post-embed-code');
         return {
             id: slugify(titleInput.value) || `post-${index}`,
             title: titleInput.value,
-            caption: captionInput.value,
             embedHtml: embedInput.value || ''
         };
     });

@@ -1898,6 +1898,17 @@ section {
     align-items: start;
 }
 
+.admin-review-box {
+    display: grid;
+    gap: 1.6rem;
+}
+
+.admin-reviews {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.6rem;
+}
+
 .admin-section,
 .admin-sidebar-box,
 .admin-review-box {
@@ -2040,6 +2051,10 @@ section {
     .admin-review-card .review-meta,
     .admin-item .admin-image,
     .admin-review-card .review-image {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-reviews {
         grid-template-columns: 1fr;
     }
 }
