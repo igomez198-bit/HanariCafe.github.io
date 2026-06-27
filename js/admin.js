@@ -3,6 +3,7 @@ import { getDatabase, ref, get, set, child } from 'https://www.gstatic.com/fireb
 
 const MENU_STORAGE_KEY = 'hanariMenuData';
 const LATEST_POSTS_STORAGE_KEY = 'hanariLatestPosts';
+const IMGUR_CLIENT_ID = 'YOUR_IMGUR_CLIENT_ID';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA1s67tKm4brUI3OPJNn-a2Gsm2Yn4s-vk",
@@ -771,7 +772,13 @@ function createAdminCard(item, index, isAddon = false) {
                     <label>Image URL</label>
                     <div class="image-controls">
                         <input type="text" class="image-url" value="${item.image}" placeholder="https://example.com/image.jpg">
-                        <button type="button" class="btn btn-alt clear-image">Clear image</button>
+                        <div class="image-control-buttons">
+                            <label class="btn btn-alt upload-image-label">
+                                Upload image
+                                <input type="file" class="image-file-input" accept="image/*" hidden>
+                            </label>
+                            <button type="button" class="btn btn-alt clear-image">Clear image</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -941,6 +948,16 @@ function wireAdminEvents() {
         };
     }
 
+    const sectionSelector = document.getElementById('admin-section-selector');
+    if (sectionSelector) {
+        sectionSelector.onchange = () => {
+            const selected = sectionSelector.value;
+            const layout = document.querySelector('.admin-layout');
+            if (!layout) return;
+            layout.dataset.section = selected;
+        };
+    }
+
     if (saveButton) {
         saveButton.onclick = async () => {
             const items = collectAdminItems();
@@ -1047,6 +1064,30 @@ function wireAdminEvents() {
             return trimmed;
         }
 
+        function uploadImageToImgur(file) {
+            if (!IMGUR_CLIENT_ID || IMGUR_CLIENT_ID === 'YOUR_IMGUR_CLIENT_ID') {
+                return Promise.reject(new Error('Please set your Imgur Client ID in js/admin.js.'));
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            return fetch('https://api.imgur.com/3/image', {
+                method: 'POST',
+                headers: {
+                    Authorization: `Client-ID ${IMGUR_CLIENT_ID}`
+                },
+                body: formData
+            })
+                .then(async response => {
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.data?.error || 'Imgur upload failed');
+                    }
+                    return result.data.link;
+                });
+        }
+
         function updatePreviewImage(inputElem, previewElem) {
             const normalizedUrl = normalizeImageUrl(inputElem.value);
             if (!normalizedUrl) {
@@ -1104,6 +1145,25 @@ function wireAdminEvents() {
                     const preview = card.querySelector('.review-image-preview');
                     updatePreviewImage(reviewImageInput, preview);
                 }, 50);
+            }
+        });
+
+        adminSection.addEventListener('change', async event => {
+            const fileInput = event.target.closest('.image-file-input');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) return;
+            const file = fileInput.files[0];
+            const card = fileInput.closest('.admin-item');
+            if (!card) return;
+            const imageInput = card.querySelector('.image-url');
+            const preview = card.querySelector('.admin-image-preview');
+
+            try {
+                const imageUrl = await uploadImageToImgur(file);
+                if (imageInput) imageInput.value = imageUrl;
+                if (preview) preview.src = imageUrl;
+                showAdminMessage('Image uploaded to Imgur successfully.');
+            } catch (error) {
+                showAdminMessage(error.message || 'Imgur upload failed.');
             }
         });
     }

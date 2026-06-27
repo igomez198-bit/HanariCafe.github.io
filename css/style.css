@@ -1936,7 +1936,7 @@ section {
 
 .admin-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.6fr) minmax(24rem, 1fr) minmax(24rem, 1fr) minmax(24rem, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
     gap: 1.8rem;
     align-items: start;
 }
@@ -2072,6 +2072,16 @@ section {
     display: grid;
     gap: 1rem;
     margin-top: .6rem;
+}
+
+.admin-item .image-control-buttons {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.upload-image-label {
+    cursor: pointer;
 }
 
 .admin-item .clear-image,
