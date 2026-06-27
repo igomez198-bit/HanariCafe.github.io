@@ -3,7 +3,7 @@ import { getDatabase, ref, get, set, child } from 'https://www.gstatic.com/fireb
 
 const MENU_STORAGE_KEY = 'hanariMenuData';
 const LATEST_POSTS_STORAGE_KEY = 'hanariLatestPosts';
-const IMGUR_CLIENT_ID = 'YOUR_IMGUR_CLIENT_ID';
+const IMGBB_API_KEY = 'd450b6de911bb328994b58806e4a2fe4';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA1s67tKm4brUI3OPJNn-a2Gsm2Yn4s-vk",
@@ -1064,27 +1064,24 @@ function wireAdminEvents() {
             return trimmed;
         }
 
-        function uploadImageToImgur(file) {
-            if (!IMGUR_CLIENT_ID || IMGUR_CLIENT_ID === 'YOUR_IMGUR_CLIENT_ID') {
-                return Promise.reject(new Error('Please set your Imgur Client ID in js/admin.js.'));
+        function uploadImageToImgbb(file) {
+            if (!IMGBB_API_KEY || IMGBB_API_KEY === 'YOUR_IMGBB_API_KEY') {
+                return Promise.reject(new Error('Please set your ImgBB API key in js/admin.js.'));
             }
 
             const formData = new FormData();
             formData.append('image', file);
 
-            return fetch('https://api.imgur.com/3/image', {
+            return fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(IMGBB_API_KEY)}`, {
                 method: 'POST',
-                headers: {
-                    Authorization: `Client-ID ${IMGUR_CLIENT_ID}`
-                },
                 body: formData
             })
                 .then(async response => {
                     const result = await response.json();
-                    if (!response.ok || !result.success) {
-                        throw new Error(result.data?.error || 'Imgur upload failed');
+                    if (!response.ok || result.status !== 200 || !result.data) {
+                        throw new Error(result.error?.message || 'ImgBB upload failed');
                     }
-                    return result.data.link;
+                    return result.data.display_url || result.data.url;
                 });
         }
 
@@ -1158,12 +1155,12 @@ function wireAdminEvents() {
             const preview = card.querySelector('.admin-image-preview');
 
             try {
-                const imageUrl = await uploadImageToImgur(file);
+                const imageUrl = await uploadImageToImgbb(file);
                 if (imageInput) imageInput.value = imageUrl;
                 if (preview) preview.src = imageUrl;
-                showAdminMessage('Image uploaded to Imgur successfully.');
+                showAdminMessage('Image uploaded to ImgBB successfully.');
             } catch (error) {
-                showAdminMessage(error.message || 'Imgur upload failed.');
+                showAdminMessage(error.message || 'ImgBB upload failed.');
             }
         });
     }
