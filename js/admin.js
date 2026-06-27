@@ -247,6 +247,19 @@ function saveMenuHistory(history) {
 
 async function addMenuHistoryEntry(entry) {
     const history = await getStoredMenuHistory();
+    const lastEntry = history[0];
+    if (lastEntry) {
+        const isSameType = lastEntry.type === entry.type;
+        const isSameItem = entry.item && lastEntry.item && lastEntry.item.id === entry.item.id;
+        const isSameSummary = entry.summary && lastEntry.summary === entry.summary;
+        const sameAction = isSameType && (isSameItem || isSameSummary);
+        const sameTime = Math.abs(lastEntry.timestamp - entry.timestamp) < 2000;
+
+        if (sameAction && sameTime) {
+            return;
+        }
+    }
+
     history.unshift(entry);
     if (history.length > 100) history.splice(100);
     saveMenuHistory(history);

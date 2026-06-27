@@ -2033,23 +2033,38 @@ section {
 
 .admin-layout[data-section="menu"] .admin-sidebar-box,
 .admin-layout[data-section="menu"] .admin-posts-box,
+.admin-layout[data-section="menu"] .admin-history-box,
 .admin-layout[data-section="menu"] .admin-review-box,
 .admin-layout[data-section="addons"] .admin-section,
 .admin-layout[data-section="addons"] .admin-posts-box,
+.admin-layout[data-section="addons"] .admin-history-box,
 .admin-layout[data-section="addons"] .admin-review-box,
 .admin-layout[data-section="posts"] .admin-section,
 .admin-layout[data-section="posts"] .admin-sidebar-box,
+.admin-layout[data-section="posts"] .admin-history-box,
 .admin-layout[data-section="posts"] .admin-review-box,
 .admin-layout[data-section="reviews"] .admin-section,
 .admin-layout[data-section="reviews"] .admin-sidebar-box,
-.admin-layout[data-section="reviews"] .admin-posts-box {
+.admin-layout[data-section="reviews"] .admin-posts-box,
+.admin-layout[data-section="reviews"] .admin-history-box,
+.admin-layout[data-section="history"] .admin-section,
+.admin-layout[data-section="history"] .admin-sidebar-box,
+.admin-layout[data-section="history"] .admin-posts-box,
+.admin-layout[data-section="history"] .admin-review-box,
+.admin-layout[data-section=""] .admin-section,
+.admin-layout[data-section=""] .admin-sidebar-box,
+.admin-layout[data-section=""] .admin-posts-box,
+.admin-layout[data-section=""] .admin-history-box,
+.admin-layout[data-section=""] .admin-review-box {
     display: none;
 }
 
 .admin-layout[data-section="all"] .admin-section,
 .admin-layout[data-section="all"] .admin-sidebar-box,
 .admin-layout[data-section="all"] .admin-posts-box,
-.admin-layout[data-section="all"] .admin-review-box {
+.admin-layout[data-section="all"] .admin-history-box,
+.admin-layout[data-section="all"] .admin-review-box,
+.admin-layout[data-section="history"] .admin-history-box {
     display: block;
 }
 
