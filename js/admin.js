@@ -547,16 +547,6 @@ async function renderLatestPostsPage() {
         const postCard = document.createElement('div');
         postCard.className = 'latest-post-card';
 
-        const title = document.createElement('h3');
-        title.textContent = post.title || 'Untitled post';
-        postCard.appendChild(title);
-
-        if (post.caption) {
-            const caption = document.createElement('p');
-            caption.textContent = post.caption;
-            postCard.appendChild(caption);
-        }
-
         const embedContainer = document.createElement('div');
         embedContainer.className = 'post-embed';
         embedContainer.innerHTML = post.embedHtml || '';
@@ -710,10 +700,6 @@ function createAdminPostCard(post, index) {
     card.dataset.index = index;
     card.innerHTML = `
             <div>
-                <label>Post title</label>
-                <input type="text" class="post-title" value="${post.title || ''}" placeholder="Post title">
-            </div>
-            <div>
                 <label>Embed code</label>
                 <textarea class="post-embed-code" rows="6" placeholder="Paste iframe embed code here">${post.embedHtml || ''}</textarea>
             </div>
@@ -730,11 +716,9 @@ function createAdminPostCard(post, index) {
 function collectAdminPosts() {
     const cards = Array.from(document.querySelectorAll('.admin-post-card'));
     return cards.map((card, index) => {
-        const titleInput = card.querySelector('.post-title');
         const embedInput = card.querySelector('.post-embed-code');
         return {
-            id: slugify(titleInput.value) || `post-${index}`,
-            title: titleInput.value,
+            id: `post-${index}`,
             embedHtml: embedInput.value || ''
         };
     });
