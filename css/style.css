@@ -1889,6 +1889,19 @@ section {
     min-width: 14rem;
 }
 
+#toggle-history {
+    background: linear-gradient(135deg, #f1c27d, #d68550);
+    color: #fff;
+    border-color: transparent;
+    box-shadow: 0 1rem 2rem rgba(214,133,80,.25);
+}
+
+#toggle-history:hover,
+#toggle-history:focus {
+    background: linear-gradient(135deg, #d68550, #bf5b2e);
+    color: #fff;
+}
+
 .admin-note {
     max-width: 78rem;
     margin: 0 auto 2.4rem;
@@ -1936,17 +1949,22 @@ section {
 
 .admin-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+    grid-template-columns: repeat(3, minmax(24rem, 1fr));
     gap: 1.8rem;
     align-items: start;
 }
 
 .admin-history-box {
+    display: none;
     background: #fff;
     border: var(--border);
     border-radius: 2rem;
     padding: 2rem;
     box-shadow: 0 1.5rem 2.5rem rgba(108, 63, 47, .08);
+}
+
+.admin-history-box.visible {
+    display: block;
 }
 
 .admin-history-box h2 {

@@ -1041,6 +1041,18 @@ function wireAdminEvents() {
         };
     }
 
+    const toggleHistoryButton = document.getElementById('toggle-history');
+    const historyBox = document.querySelector('.admin-history-box');
+    if (toggleHistoryButton && historyBox) {
+        toggleHistoryButton.onclick = () => {
+            historyBox.classList.toggle('visible');
+            toggleHistoryButton.textContent = historyBox.classList.contains('visible') ? 'Hide history' : 'Show history';
+            if (historyBox.classList.contains('visible')) {
+                renderAdminHistory();
+            }
+        };
+    }
+
     if (saveButton) {
         saveButton.onclick = async () => {
             const items = collectAdminItems();
