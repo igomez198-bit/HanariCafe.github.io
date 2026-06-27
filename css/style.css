@@ -2078,10 +2078,37 @@ section {
     display: flex;
     gap: 0.8rem;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .upload-image-label {
     cursor: pointer;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.upload-image-label.uploading {
+    opacity: 0.85;
+}
+
+.upload-image-label .upload-spinner {
+    width: 1.2rem;
+    height: 1.2rem;
+    border: 2px solid rgba(255,255,255,0.75);
+    border-top-color: rgba(77,52,37,0.95);
+    border-radius: 50%;
+    display: none;
+    animation: spin 0.8s linear infinite;
+}
+
+.upload-image-label.uploading .upload-spinner {
+    display: inline-block;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }
 
 .admin-item .clear-image,

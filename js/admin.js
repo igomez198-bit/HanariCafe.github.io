@@ -773,8 +773,9 @@ function createAdminCard(item, index, isAddon = false) {
                     <div class="image-controls">
                         <input type="text" class="image-url" value="${item.image}" placeholder="https://example.com/image.jpg">
                         <div class="image-control-buttons">
-                            <label class="btn btn-alt upload-image-label">
-                                Upload image
+                            <label class="btn btn-alt upload-image-label" aria-live="polite">
+                                <span class="upload-label-text">Upload image</span>
+                                <span class="upload-spinner" aria-hidden="true"></span>
                                 <input type="file" class="image-file-input" accept="image/*" hidden>
                             </label>
                             <button type="button" class="btn btn-alt clear-image">Clear image</button>
@@ -1085,6 +1086,19 @@ function wireAdminEvents() {
                 });
         }
 
+        function setUploadState(card, isUploading) {
+            const uploadLabel = card.querySelector('.upload-image-label');
+            const fileInput = card.querySelector('.image-file-input');
+            const labelText = card.querySelector('.upload-label-text');
+            if (uploadLabel) {
+                uploadLabel.classList.toggle('uploading', isUploading);
+            }
+            if (labelText) {
+                labelText.textContent = isUploading ? 'Uploading…' : 'Upload image';
+            }
+            if (fileInput) fileInput.disabled = isUploading;
+        }
+
         function updatePreviewImage(inputElem, previewElem) {
             const normalizedUrl = normalizeImageUrl(inputElem.value);
             if (!normalizedUrl) {
@@ -1155,12 +1169,15 @@ function wireAdminEvents() {
             const preview = card.querySelector('.admin-image-preview');
 
             try {
+                setUploadState(card, true);
                 const imageUrl = await uploadImageToImgbb(file);
                 if (imageInput) imageInput.value = imageUrl;
                 if (preview) preview.src = imageUrl;
                 showAdminMessage('Image uploaded to ImgBB successfully.');
             } catch (error) {
                 showAdminMessage(error.message || 'ImgBB upload failed.');
+            } finally {
+                setUploadState(card, false);
             }
         });
     }
