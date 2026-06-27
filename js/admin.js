@@ -2,6 +2,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebas
 import { getDatabase, ref, get, set, child } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js';
 
 const MENU_STORAGE_KEY = 'hanariMenuData';
+const LATEST_POSTS_STORAGE_KEY = 'hanariLatestPosts';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA1s67tKm4brUI3OPJNn-a2Gsm2Yn4s-vk",
@@ -335,6 +336,52 @@ async function saveReviews(reviews) {
     }
 }
 
+async function getStoredLatestPosts() {
+    await initFirebase();
+
+    if (isFirebaseReady) {
+        try {
+            const snapshot = await get(child(ref(firebaseDb), 'latestPosts'));
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                return Array.isArray(data) ? data : Object.values(data);
+            }
+        } catch (error) {
+            console.warn('Firebase latest posts read failed, using localStorage fallback.', error);
+        }
+    }
+
+    const stored = localStorage.getItem(LATEST_POSTS_STORAGE_KEY);
+    if (!stored) {
+        return [];
+    }
+
+    try {
+        const parsed = JSON.parse(stored);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+async function saveLatestPosts(posts) {
+    localStorage.setItem(LATEST_POSTS_STORAGE_KEY, JSON.stringify(posts));
+
+    if (document.getElementById('latest-posts-list')) {
+        await renderLatestPostsPage();
+    }
+
+    if (isFirebaseReady) {
+        try {
+            await set(ref(firebaseDb, 'latestPosts'), posts);
+            console.log('Firebase latest posts save completed');
+            return;
+        } catch (error) {
+            console.warn('Firebase latest posts save failed, saved locally only.', error);
+        }
+    }
+}
+
 async function saveMenuItems(items) {
     localStorage.setItem(MENU_STORAGE_KEY, JSON.stringify(items));
 
@@ -392,8 +439,10 @@ function hideAdminLock() {
 async function activateAdmin() {
     await renderMenuPageItems();
     await renderHomeMenuPreview();
+    await renderLatestPostsPage();
     await renderReviewsPage();
     await renderAdminItems();
+    await renderAdminPosts();
     wireAdminEvents();
 }
 
@@ -482,6 +531,41 @@ async function renderHomeMenuPreview() {
     });
 }
 
+async function renderLatestPostsPage() {
+    const wrapper = document.getElementById('latest-posts-list');
+    if (!wrapper) return;
+    const posts = await getStoredLatestPosts();
+    const visiblePosts = posts.slice(0, 3);
+    wrapper.innerHTML = '';
+
+    if (visiblePosts.length === 0) {
+        wrapper.innerHTML = '<p class="section-copy">No posts have been added yet.</p>';
+        return;
+    }
+
+    visiblePosts.forEach(post => {
+        const postCard = document.createElement('div');
+        postCard.className = 'latest-post-card';
+
+        const title = document.createElement('h3');
+        title.textContent = post.title || 'Untitled post';
+        postCard.appendChild(title);
+
+        if (post.caption) {
+            const caption = document.createElement('p');
+            caption.textContent = post.caption;
+            postCard.appendChild(caption);
+        }
+
+        const embedContainer = document.createElement('div');
+        embedContainer.className = 'post-embed';
+        embedContainer.innerHTML = post.embedHtml || '';
+        postCard.appendChild(embedContainer);
+
+        wrapper.appendChild(postCard);
+    });
+}
+
 function createHomeMenuCard(item) {
     const imgSrc = item.image || ADMIN_PLACEHOLDER_IMAGE;
     const anchor = document.createElement('a');
@@ -549,15 +633,18 @@ function createAddonListItem(item) {
 async function renderAdminItems() {
     const menuContainer = document.getElementById('admin-items');
     const addonContainer = document.getElementById('admin-addons');
+    const postsContainer = document.getElementById('admin-posts');
     const reviewsContainer = document.getElementById('admin-reviews');
-    if (!menuContainer || !addonContainer || !reviewsContainer) return;
+    if (!menuContainer || !addonContainer || !postsContainer || !reviewsContainer) return;
     const items = await getStoredMenuItems();
     const menuItems = items.filter(item => item.category !== 'Add-Ons');
     const addonItems = items.filter(item => item.category === 'Add-Ons');
+    const posts = await getStoredLatestPosts();
     const reviews = await getStoredReviews();
 
     menuContainer.innerHTML = '';
     addonContainer.innerHTML = '';
+    postsContainer.innerHTML = '';
     reviewsContainer.innerHTML = '';
 
     menuItems.forEach((item, index) => {
@@ -568,6 +655,10 @@ async function renderAdminItems() {
     addonItems.forEach((item, index) => {
         const globalIndex = items.indexOf(item);
         addonContainer.appendChild(createAdminCard(item, globalIndex, true));
+    });
+
+    posts.forEach((post, index) => {
+        postsContainer.appendChild(createAdminPostCard(post, index));
     });
 
     reviews.forEach((review, index) => {
@@ -611,6 +702,59 @@ function createReviewCard(review) {
         <div class="review-meta"><span>– ${review.name}</span><span class="rating">⭐⭐⭐⭐⭐</span></div>
     `;
     return card;
+}
+
+function createAdminPostCard(post, index) {
+    const card = document.createElement('div');
+    card.className = 'admin-post-card';
+    card.dataset.index = index;
+    card.innerHTML = `
+            <div>
+                <label>Post title</label>
+                <input type="text" class="post-title" value="${post.title || ''}" placeholder="Post title">
+            </div>
+            <div>
+                <label>Post caption</label>
+                <input type="text" class="post-caption" value="${post.caption || ''}" placeholder="Short caption">
+            </div>
+            <div>
+                <label>Embed code</label>
+                <textarea class="post-embed-code" rows="6" placeholder="Paste iframe embed code here">${post.embedHtml || ''}</textarea>
+            </div>
+            <div class="post-preview-label">Live preview</div>
+            <div class="post-live-preview">${post.embedHtml || ''}</div>
+            <div class="admin-actions">
+                <button type="button" class="btn btn-alt save-post">Save post</button>
+                <button type="button" class="btn remove-post">Remove post</button>
+            </div>
+        `;
+    return card;
+}
+
+function collectAdminPosts() {
+    const cards = Array.from(document.querySelectorAll('.admin-post-card'));
+    return cards.map((card, index) => {
+        const titleInput = card.querySelector('.post-title');
+        const captionInput = card.querySelector('.post-caption');
+        const embedInput = card.querySelector('.post-embed-code');
+        return {
+            id: slugify(titleInput.value) || `post-${index}`,
+            title: titleInput.value,
+            caption: captionInput.value,
+            embedHtml: embedInput.value || ''
+        };
+    });
+}
+
+async function renderAdminPosts() {
+    const postsContainer = document.getElementById('admin-posts');
+    if (!postsContainer) return;
+    const posts = await getStoredLatestPosts();
+    postsContainer.innerHTML = '';
+
+    posts.forEach((post, index) => {
+        postsContainer.appendChild(createAdminPostCard(post, index));
+    });
 }
 
 async function renderReviewsPage() {
@@ -804,13 +948,31 @@ function wireAdminEvents() {
         };
     }
 
+    const addPostButton = document.getElementById('add-post');
+    if (addPostButton) {
+        addPostButton.onclick = async () => {
+            const posts = await getStoredLatestPosts();
+            posts.unshift({
+                id: `new-post-${Date.now()}`,
+                title: 'New post',
+                caption: 'Enter post caption.',
+                embedHtml: ''
+            });
+            await saveLatestPosts(posts);
+            await renderAdminPosts();
+        };
+    }
+
     if (saveButton) {
         saveButton.onclick = async () => {
             const items = collectAdminItems();
             await saveMenuItems(items);
             const reviews = collectAdminReviews();
             await saveReviews(reviews);
+            const posts = collectAdminPosts();
+            await saveLatestPosts(posts);
             await renderAdminItems();
+            await renderAdminPosts();
         };
     }
 
@@ -854,19 +1016,19 @@ function wireAdminEvents() {
                     await renderAdminItems();
                 }
             }
-            if (event.target.closest('.save-review')) {
-                const reviews = collectAdminReviews();
-                saveReviews(reviews);
-                await renderAdminItems();
+            if (event.target.closest('.save-post')) {
+                const posts = collectAdminPosts();
+                await saveLatestPosts(posts);
+                await renderAdminPosts();
             }
-            if (event.target.closest('.remove-review')) {
-                const card = event.target.closest('.admin-review-card');
+            if (event.target.closest('.remove-post')) {
+                const card = event.target.closest('.admin-post-card');
                 const index = card ? parseInt(card.dataset.index, 10) : null;
                 if (index !== null && !Number.isNaN(index)) {
-                    const reviews = getStoredReviews();
-                    reviews.splice(index, 1);
-                    saveReviews(reviews);
-                    await renderAdminItems();
+                    const posts = await getStoredLatestPosts();
+                    posts.splice(index, 1);
+                    await saveLatestPosts(posts);
+                    await renderAdminPosts();
                 }
             }
         });
@@ -936,6 +1098,15 @@ function wireAdminEvents() {
                 const card = reviewImageInput.closest('.admin-review-card');
                 const preview = card.querySelector('.review-image-preview');
                 updatePreviewImage(reviewImageInput, preview);
+                return;
+            }
+            const postEmbedInput = event.target.closest('.post-embed-code');
+            if (postEmbedInput) {
+                const card = postEmbedInput.closest('.admin-post-card');
+                const preview = card.querySelector('.post-live-preview');
+                if (preview) {
+                    preview.innerHTML = postEmbedInput.value || '';
+                }
             }
         });
 
@@ -964,6 +1135,7 @@ async function initAdmin() {
     await initFirebase();
     await renderMenuPageItems();
     await renderHomeMenuPreview();
+    await renderLatestPostsPage();
     await renderReviewsPage();
     await renderAdminItems();
     wireAdminEvents();
@@ -984,6 +1156,9 @@ window.addEventListener('storage', async event => {
         if (document.getElementById('home-menu-preview')) {
             await renderHomeMenuPreview();
         }
+    }
+    if (event.key === LATEST_POSTS_STORAGE_KEY && document.getElementById('latest-posts-list')) {
+        await renderLatestPostsPage();
     }
 });
 
