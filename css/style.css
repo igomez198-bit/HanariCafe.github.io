@@ -839,7 +839,7 @@ section {
 
 .latest-posts .latest-posts-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(34rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(40rem, 52rem));
     gap: 1.5rem;
     margin-top: 3rem;
     justify-content: center;
@@ -852,15 +852,13 @@ section {
     border-radius: 2rem;
     padding: 1.8rem;
     box-shadow: 0 1.2rem 2rem rgba(108, 63, 47, .08);
-    width: 100%;
-    max-width: 40rem;
-    min-width: 34rem;
+    width: min(52rem, 100%);
+    max-width: 52rem;
 }
 
 .post-embed {
     width: 100%;
     max-width: 100%;
-    min-width: 34rem;
     overflow: hidden;
     border-radius: 1.5rem;
 }
