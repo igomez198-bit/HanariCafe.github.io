@@ -839,7 +839,7 @@ section {
 
 .latest-posts .latest-posts-list {
     display: grid;
-    grid-template-columns: repeat(3, minmax(40rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(40rem, 52rem));
     gap: 1.5rem;
     margin-top: 3rem;
     justify-content: center;
